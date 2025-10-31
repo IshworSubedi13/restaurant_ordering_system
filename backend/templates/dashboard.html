@@ -6,17 +6,18 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="assets/css/styles.css">
     <script defer src="assets/js/toogle.js"></script>
+    <script defer src="assets/js/data_icon.js"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
    <!-- Sidebar -->
   <aside class="sidebar" id="sidebar">
     <h2>AdminPanel</h2>
-    <a href="#" class="active" data-section="dashboard">Dashboard</a>
-    <a href="#" data-section="orders">Orders</a>
-    <a href="#" data-section="menu">Menu</a>
-    <a href="#" data-section="users">Users</a>
-    <a href="#" data-section="reviews">Reviews</a>
+    <a href="#" class="active" data-icon="dashboard" data-section="dashboard">Dashboard</a>
+    <a href="#" data-icon="lunch_dining" data-section="orders">Orders</a>
+    <a href="#" data-icon="menu_book"data-section="menu">Menu</a>
+    <a href="#" data-icon="people"data-section="users">Users</a>
+    <a href="#" data-icon="comment"data-section="reviews">Reviews</a>
   </aside>
 
    <!-- Main -->
@@ -25,6 +26,10 @@
       <span class="menu-toggle" id="menu-toggle">☰</span>
       <h1 id="section-title">Dashboard</h1>
     </header>
+
+    <section class="content" id="content">
+      <p>Welcome to your dashboard!</p>
+    </section>
   </main>
 
 </body>
