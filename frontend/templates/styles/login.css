@@ -56,47 +56,6 @@ body {
   font-weight: 500;
 }
 
-.google-btn {
-  width: 100%;
-  border: 1px solid #25bca8;
-  background-color: #fff;
-  color: #25bca8;
-  padding: 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-weight: 500;
-  transition: background 0.2s;
-}
-
-.google-btn:hover {
-  background-color: #e9f7f5;
-}
-
-.divider {
-  margin: 20px 0;
-  display: flex;
-  align-items: center;
-  text-align: center;
-  color: #999;
-}
-
-.divider::before,
-.divider::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: #ddd;
-}
-
-.divider span {
-  padding: 0 10px;
-  font-size: 14px;
-}
-
 form {
   text-align: left;
 }
@@ -112,8 +71,17 @@ label {
   color: red;
 }
 
-input[type="email"],
-input[type="password"] {
+input[type="email"]
+{
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.password {
   width: 100%;
   padding: 10px;
   margin-top: 5px;
@@ -124,6 +92,8 @@ input[type="password"] {
 
 .password-wrapper {
   position: relative;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .toggle-password {
@@ -132,14 +102,6 @@ input[type="password"] {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-}
-
-.options {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 10px 0;
-  font-size: 13px;
 }
 
 .signin-btn {
@@ -156,18 +118,6 @@ input[type="password"] {
 
 .signin-btn:hover {
   background-color: #1fa38f;
-}
-
-.forgot {
-  display: block;
-  margin-top: 15px;
-  color: #25bca8;
-  font-size: 14px;
-  text-decoration: none;
-}
-
-.forgot:hover {
-  text-decoration: underline;
 }
 
 .signup {
@@ -189,4 +139,21 @@ input[type="password"] {
 }
 .signup a:hover {
   color: #999
+}
+.show-hide {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.invalid input {
+  border: 1px solid red;
 }
