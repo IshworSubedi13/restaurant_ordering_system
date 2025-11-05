@@ -19,7 +19,7 @@ async function loadContent(section){
     if(section === "menu"){
         loadMenuPage();
     }
-    if(section === "users"){
+    if(section === "user"){
         loadUsersPage();
     }
 }
@@ -98,6 +98,40 @@ function loadMenuPage(){
       <td>${menu.price.toFixed(2)}</td>
       <td>${menu.available ? "TRUE" : "FALSE"}</td>
       <td><img src="${menu.image}" width="50" height="50"></td>
+      <td class="actions">
+        <button class="edit">Edit</button>
+        <button class="delete">Delete</button>
+      </td>
+    </tr>
+  `).join("")
+}
+
+
+const Users = [
+  {
+    user_id: 1,
+    name: "John Doe",
+    email: "john@example.com"
+  },
+  {
+    user_id: 2,
+    name: "Jane Smith",
+    email: "jane@example.com"
+  },
+  {
+    user_id: 3,
+    name: "Michael Brown",
+    email: "michael@example.com"
+  }
+]
+
+function loadUsersPage(){
+  const tbody = document.getElementById("users-body")
+  tbody.innerHTML = Users.map(user => `
+    <tr>
+      <td>${user.user_id}</td>
+      <td>${user.name}</td>
+      <td>${user.email}</td>
       <td class="actions">
         <button class="edit">Edit</button>
         <button class="delete">Delete</button>
