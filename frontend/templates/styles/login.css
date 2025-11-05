@@ -1,0 +1,159 @@
+* {
+  box-sizing: border-box;
+  font-family: "Inter", sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: #edf1f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.login-container {
+  width: 100%;
+  margin: auto;
+  max-width: 480px;
+}
+
+.login-card {
+  width: 100%;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 40px 30px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+@media (min-width: 600px) {
+  .login-card {
+    margin: 24px;
+  }
+}
+@media (min-width: 1200px) {
+  .login-card-box {
+    max-width: 475px;
+  }
+}
+@media (min-width: 600px) {
+  .login-card-box-wrapper {
+    padding: 24px;
+  }
+}
+
+.logo img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+}
+
+.title {
+  color: #777;
+  margin: 20px 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+form {
+  text-align: left;
+}
+
+label {
+  font-size: 14px;
+  color: #555;
+  display: block;
+  margin-top: 10px;
+}
+
+.required {
+  color: red;
+}
+
+input[type="email"]
+{
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.password {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+}
+
+.password-wrapper {
+  position: relative;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.signin-btn {
+  width: 100%;
+  background-color: #25bca8;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 15px;
+  transition: background 0.3s;
+}
+
+.signin-btn:hover {
+  background-color: #1fa38f;
+}
+
+.signup {
+  display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    margin-top: 10px;
+    color: #555;
+}
+.signup p {
+  margin: 0;
+}
+.signup a {
+  text-decoration: unset;
+  color: #25bca8;
+  font-weight: 500;
+}
+.signup a:hover {
+  color: #999
+}
+.show-hide {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+}
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+.invalid input {
+  border: 1px solid red;
+}
