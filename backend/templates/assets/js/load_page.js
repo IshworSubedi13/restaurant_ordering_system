@@ -60,6 +60,48 @@ function loadOrdersPage() {
         </tr>
     `).join("");
 }
-loadOrdersPage();
 
+const menus = [
+  {
+    menu_id: 1,
+    name: "Cheese Burger",
+    category_id: 3,
+    price: 5.99,
+    available: true,
+    image: "https://thumbs.dreamstime.com/b/close-up-four-cheese-pizza-slice-close-up-shot-four-cheese-pizza-perfectly-melted-cheese-stretchy-gooey-ready-327216466.jpg"
+  },
+  {
+    menu_id: 2,
+    name: "Large Fries",
+    category_id: 2,
+    price: 2.49,
+    available: true,
+    image: "https://img.freepik.com/free-vector/crispy-golden-french-fries-illustration_1308-167222.jpg?semt=ais_hybrid&w=740&q=80"
+  },
+  {
+    menu_id: 3,
+    name: "Milkshake",
+    category_id: 4,
+    price: 3.75,
+    available: false,
+    image: "https://img.freepik.com/free-photo/high-angle-assortment-desserts-with-straws-chocolate_23-2148603243.jpg?semt=ais_hybrid&w=740&q=80"
+  }
+]
 
+function loadMenuPage(){
+  const body = document.getElementById("menu-body")
+  body.innerHTML = menus.map(menu => `
+    <tr>
+      <td>${menu.menu_id}</td>
+      <td>${menu.name}</td>
+      <td>${menu.category_id}</td>
+      <td>${menu.price.toFixed(2)}</td>
+      <td>${menu.available ? "TRUE" : "FALSE"}</td>
+      <td><img src="${menu.image}" width="50" height="50"></td>
+      <td class="actions">
+        <button class="edit">Edit</button>
+        <button class="delete">Delete</button>
+      </td>
+    </tr>
+  `).join("")
+}
