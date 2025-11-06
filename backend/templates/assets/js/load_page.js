@@ -22,6 +22,9 @@ async function loadContent(section){
     if(section === "user"){
         loadUsersPage();
     }
+    if(section === "review"){
+        loadReviewsPage();
+    }
 }
 
 const Orders = [
@@ -132,6 +135,49 @@ function loadUsersPage(){
       <td>${user.user_id}</td>
       <td>${user.name}</td>
       <td>${user.email}</td>
+      <td class="actions">
+        <button class="edit">Edit</button>
+        <button class="delete">Delete</button>
+      </td>
+    </tr>
+  `).join("")
+}
+
+
+const Reviews = [
+  {
+    review_id: 1,
+    name: "Ram",
+    menu_name: "Cheese Burger",
+    comment: "Very juicy and tasty!",
+    rating: 5
+  },
+  {
+    review_id: 2,
+    name: "Roshan",
+    menu_name: "Milkshake",
+    comment: "Too sweet for me.",
+    rating: 3
+  },
+  {
+    review_id: 3,
+    name: "Sujan",
+    menu_name: "Large Fries",
+    comment: "Crispy perfection.",
+    rating: 4
+  }
+]
+
+function loadReviewsPage(){
+  const tbody = document.getElementById("reviews-body")
+
+  tbody.innerHTML = Reviews.map(r => `
+    <tr>
+      <td>${r.review_id}</td>
+      <td>${r.name}</td>
+      <td>${r.menu_name}</td>
+      <td>${r.comment}</td>
+      <td>${r.rating}</td>
       <td class="actions">
         <button class="edit">Edit</button>
         <button class="delete">Delete</button>
