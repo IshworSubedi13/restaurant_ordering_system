@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <script defer src="assets/js/toogle.js"></script>
+    <script defer src="assets/js/data_icon.js"></script>
+    <script defer src="assets/js/load_page.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+</head>
+<body>
+<!-- Mobile Overlay -->
+<div class="mobile-overlay" id="mobile-overlay"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+    <h2>AdminPanel</h2>
+    <a href="#" class="active" data-section="dashboard">
+        <span class="material-icons">dashboard</span>
+        <span>Dashboard</span>
+    </a>
+    <a href="#" data-section="order">
+        <span class="material-icons">lunch_dining</span>
+        <span>Orders</span>
+    </a>
+    <a href="#" data-section="menu">
+        <span class="material-icons">menu_book</span>
+        <span>Menu</span>
+    </a>
+    <a href="#" data-section="user">
+        <span class="material-icons">people</span>
+        <span>Users</span>
+    </a>
+    <a href="#" data-section="review">
+        <span class="material-icons">comment</span>
+        <span>Reviews</span>
+    </a>
+</aside>
+
+<!-- Main -->
+<main class="main">
+    <header class="topbar">
+        <span class="menu-toggle" id="menu-toggle">☰</span>
+        <h1 id="section-title">Dashboard</h1>
+    </header>
+
+    <section class="content" id="content">
+        <div class="dashboard-container">
+            <div class="dashboard-cards">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Total Orders</div>
+                        <div class="card-icon">
+                            <span class="material-icons">shopping_cart</span>
+                        </div>
+                    </div>
+                    <div class="card-value">1,248</div>
+                    <div class="card-change positive">+12% from last month</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Revenue</div>
+                        <div class="card-icon">
+                            <span class="material-icons">euro</span>
+                        </div>
+                    </div>
+                    <div class="card-value">€24,580</div>
+                    <div class="card-change positive">+8% from last month</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Customers</div>
+                        <div class="card-icon">
+                            <span class="material-icons">people</span>
+                        </div>
+                    </div>
+                    <div class="card-value">892</div>
+                    <div class="card-change positive">+5% from last month</div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Reviews</div>
+                        <div class="card-icon">
+                            <span class="material-icons">star</span>
+                        </div>
+                    </div>
+                    <div class="card-value">4.7/5</div>
+                    <div class="card-change negative">-0.1 from last month</div>
+                </div>
+            </div>
+
+            <div class="activity-section">
+                <h3>
+                    Recent Activity
+                    <a href="#" class="view-all">View All</a>
+                </h3>
+                <ul class="activity-list">
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <span class="material-icons">shopping_cart</span>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">New order #1249 received</div>
+                            <div class="activity-time">5 minutes ago</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <span class="material-icons">person_add</span>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">New customer registered</div>
+                            <div class="activity-time">1 hour ago</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <span class="material-icons">rate_review</span>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">New review submitted</div>
+                            <div class="activity-time">2 hours ago</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <span class="material-icons">inventory</span>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Menu item updated</div>
+                            <div class="activity-time">3 hours ago</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <span class="material-icons">local_offer</span>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Special offer created</div>
+                            <div class="activity-time">5 hours ago</div>
+                        </div>
+                    </li>
+                    <li class="activity-item">
+                        <div class="activity-icon">
+                            <span class="material-icons">assignment_turned_in</span>
+                        </div>
+                        <div class="activity-details">
+                            <div class="activity-title">Order #1248 <span class="status-delivered">Delivered</span>
+                            </div>
+                            <div class="activity-time">Yesterday</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
