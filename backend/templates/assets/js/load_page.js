@@ -7,12 +7,26 @@ document.querySelectorAll("aside.sidebar a").forEach(link => {
         const section = link.dataset.section;
         document.getElementById("section-title").innerText = section.charAt(0).toUpperCase() + section.slice(1);
         loadContent(section);
+        if (window.innerWidth <= 1024) {
+            closeSidebar();
+        }
     });
 });
+
+function closeSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const mobileOverlay = document.getElementById('mobile-overlay');
+    if (sidebar) sidebar.classList.remove('active');
+    if (mobileOverlay) mobileOverlay.classList.remove('active');
+}
+
 
 async function loadContent(section){
     const html = await fetch(`pages/${section}.html`).then(r => r.text());
     document.getElementById("content").innerHTML = html;
+    if(section === "dashboard"){
+        loadReviewsPage();
+    }
     if(section === "order"){
         loadOrdersPage();
     }
@@ -185,3 +199,4 @@ function loadReviewsPage(){
     </tr>
   `).join("")
 }
+
