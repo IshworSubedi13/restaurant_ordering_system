@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu - My Restaurant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet"  href="../assest/css/styles.css" type="text/css">
+    <script src="../assest/js/product.js" defer></script>
+    <script src="../assest/js/hamburger.js" defer></script>
+</head>
+<body>
+    <header>
+        <div class="site_logo">My Restaurant</div>
+        <nav>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul id="nav-menu">
+                <li><a href="../index.html">Home</a></li>
+                <li><a href="product.html">Menu</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-title">
+            <h1>Our Menu</h1>
+            <p>Delicious meals made with fresh, locally sourced ingredients</p>
+        </section>
+
+        <section class="content">
+            <div class="menu-categories">
+                <button class="category-btn active" data-category="all">All Items</button>
+                <button class="category-btn" data-category="starters">Starters</button>
+                <button class="category-btn" data-category="mains">Main Courses</button>
+                <button class="category-btn" data-category="desserts">Desserts</button>
+                <button class="category-btn" data-category="drinks">Drinks</button>
+            </div>
+
+            <div class="menu-items" id="menu-items">
+            </div>
+
+            <div class="cart-section">
+                <div class="cart-header">
+                    <h2 class="cart-title">Your Order</h2>
+                    <span id="cart-count">0 items</span>
+                </div>
+                <div class="cart-items" id="cart-items">
+                    <div class="empty-cart">Your cart is empty</div>
+                </div>
+                <div class="cart-total">
+                    <span>Total:</span>
+                    <span id="cart-total">€0.00</span>
+                </div>
+                <button class="checkout-btn" id="checkout-btn">Proceed to Checkout</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Order Confirmation Modal -->
+    <div class="modal" id="order-modal">
+        <div class="modal-content">
+            <h2>Order Confirmed!</h2>
+            <p>Thank you for your order. Your food will be prepared shortly.</p>
+            <p>Estimated delivery time: 25-35 minutes</p>
+            <button class="close-modal" id="close-modal">Continue Shopping</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright &copy; 2025. All rights reserved</p>
+    </footer>
+</body>
+</html>
