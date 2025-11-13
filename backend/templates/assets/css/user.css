@@ -1,0 +1,18 @@
+.add-btn {
+  background: #e67e22;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 15px;
+  font-weight: bold;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+}
+
+.add-btn:hover {
+  background: #d35400;
+  transform: translateY(-2px);
+}
