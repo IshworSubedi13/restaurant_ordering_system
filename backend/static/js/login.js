@@ -49,7 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     }
                 }, 1000);
             } else {
-                errorMessage.textContent = data.error || "Login failed. Please try again.";
+                const msg = data.error || data.message || data.detail || "Invalid email or password.";
+                errorMessage.textContent = msg;
+                errorMessage.style.display = "block";
             }
         } catch (err) {
             console.error("Network error:", err);
@@ -60,3 +62,4 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
+

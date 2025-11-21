@@ -145,3 +145,22 @@ body {
     animation: spin 1s ease-in-out infinite;
     margin-right: 10px;
 }
+.error-message {
+    background: #e74c3c;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    display: none;
+}
+
+.success-message {
+    background: #2ecc71;
+    color: white;
+    padding: 10px 12px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    font-size: 14px;
+    display: none;
+}
