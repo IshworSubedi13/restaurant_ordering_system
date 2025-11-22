@@ -12,6 +12,10 @@ def create_app():
 
     register_blueprints(app)
 
+    @app.route("/")
+    def home():
+        return "Welcome to the Restaurant Management System API"
+
     @app.route("/admin/login")
     def admin_login():
         return render_template("pages/admin_login.html")

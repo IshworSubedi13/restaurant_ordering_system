@@ -40,6 +40,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 localStorage.setItem("user", JSON.stringify(data.user));
 
                 successMessage.textContent = "Login successful! Redirecting...";
+                successMessage.style.display = "block";
 
                 setTimeout(() => {
                     if (data.user.role === "admin") {
