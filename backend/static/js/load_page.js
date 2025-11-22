@@ -22,7 +22,10 @@ function closeSidebar() {
 }
 
 const sectionLoaders = {
-    dashboard: () => { if (typeof loadCustomerCount === "function") loadCustomerCount(); },
+    dashboard: () => {
+    if (typeof loadCustomerCount === "function") loadCustomerCount();
+    if (typeof loadActivity === "function") loadActivity();
+    },
     user: () => { if (typeof loadUsersPage === "function") loadUsersPage(); },
     order: () => { if (typeof loadOrdersPage === "function") loadOrdersPage(); },
     menu: () => { if (typeof loadMenuPage === "function") loadMenuPage(); },
