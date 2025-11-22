@@ -24,6 +24,13 @@ def create_app():
     def admin_dashboard():
         return render_template("index.html")
 
+    @app.route("/admin/<page>")
+    def admin_page(page):
+        try:
+            return render_template(f"pages/{page}.html")
+        except:
+            return "Page not found", 404
+
     @app.route("/logout")
     def logout():
         return redirect(url_for("admin_login"))

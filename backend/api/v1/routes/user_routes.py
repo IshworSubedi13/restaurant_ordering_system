@@ -31,3 +31,13 @@ def get_user_by_id_route(user_id):
         return jsonify({"error": "User not found"}), 404
 
     return jsonify(user_to_dict(user)), 200
+
+@user_bp.get("/count")
+@jwt_required()
+def get_customer_count():
+    claims = get_jwt()
+    if claims.get("role") != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+
+    total_customers = sum(1 for u in list_all_users() if u.role == "user")
+    return jsonify({"total_customers": total_customers}), 200

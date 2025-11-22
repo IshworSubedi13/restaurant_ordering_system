@@ -5,7 +5,8 @@ document.querySelectorAll("aside.sidebar a").forEach(link => {
         link.classList.add("active");
 
         const section = link.dataset.section;
-        document.getElementById("section-title").innerText = section.charAt(0).toUpperCase() + section.slice(1);
+        const sectionTitle = document.getElementById("section-title");
+        if(sectionTitle) sectionTitle.innerText = section.charAt(0).toUpperCase() + section.slice(1);
         loadContent(section);
         if (window.innerWidth <= 1024) {
             closeSidebar();
@@ -20,24 +21,31 @@ function closeSidebar() {
     if (mobileOverlay) mobileOverlay.classList.remove('active');
 }
 
+const sectionLoaders = {
+    dashboard: () => { if (typeof loadCustomerCount === "function") loadCustomerCount(); },
+    user: () => { if (typeof loadUsersPage === "function") loadUsersPage(); },
+    order: () => { if (typeof loadOrdersPage === "function") loadOrdersPage(); },
+    menu: () => { if (typeof loadMenuPage === "function") loadMenuPage(); },
+    review: () => { if (typeof loadReviewsPage === "function") loadReviewsPage(); }
+};
+
 
 async function loadContent(section){
-    const html = await fetch(`pages/${section}.html`).then(r => r.text());
-    document.getElementById("content").innerHTML = html;
-    if(section === "dashboard"){
-        loadReviewsPage();
-    }
-    if(section === "order"){
-        loadOrdersPage();
-    }
-    if(section === "menu"){
-        loadMenuPage();
-    }
-    if(section === "user"){
-        loadUsersPage();
-    }
-    if(section === "review"){
-        loadReviewsPage();
+    const contentDiv = document.getElementById("content");
+    if (!contentDiv) return;
+    try {
+        const response = await fetch(`/admin/${section}`);
+        if (!response.ok) {
+            contentDiv.innerHTML = `<p>Error loading ${section} page</p>`;
+            return;
+        }
+        const html = await response.text();
+        contentDiv.innerHTML = html;
+        sectionLoaders[section]?.();
+    } catch (error) {
+        console.error("Error loading content:", error);
+        contentDiv.innerHTML = `<p>Error loading ${section} page</p>`;
+        return;
     }
 }
 
@@ -123,38 +131,60 @@ function loadMenuPage(){
   `).join("")
 }
 
-
-const Users = [
-  {
-    user_id: 1,
-    name: "John Doe",
-    email: "john@example.com"
-  },
-  {
-    user_id: 2,
-    name: "Jane Smith",
-    email: "jane@example.com"
-  },
-  {
-    user_id: 3,
-    name: "Michael Brown",
-    email: "michael@example.com"
-  }
-]
-
-function loadUsersPage(){
+// Load users
+async function loadUsersPage(){
   const tbody = document.getElementById("users-body")
-  tbody.innerHTML = Users.map(user => `
-    <tr>
-      <td>${user.user_id}</td>
-      <td>${user.name}</td>
-      <td>${user.email}</td>
-      <td class="actions">
-        <button class="edit">Edit</button>
-        <button class="delete">Delete</button>
-      </td>
-    </tr>
-  `).join("")
+  if (!tbody) return;
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+  const role = user?.role?.toLowerCase();
+  if (!token) {
+        tbody.innerHTML = "<tr><td colspan='4'>Unauthorized (no token)</td></tr>";
+        return;
+    }
+  if (!user || user.role !== "admin") {
+        tbody.innerHTML = "<tr><td colspan='4'>Unauthorized (admin only)</td></tr>";
+        return;
+    }
+
+  tbody.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
+  try {
+        const response = await fetch("/api/v1/users/", {
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            tbody.innerHTML = `<tr><td colspan='4'>Error: ${data.error || "Failed to load users"}</td></tr>`;
+            return;
+        }
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='4'>No users found</td></tr>";
+            return;
+        }
+        tbody.innerHTML = data.map(user => `
+            <tr>
+                <td>${user.id}</td>
+                <td>${user.name}</td>
+                <td>${user.email}</td>
+                <td>${user.role}</td>
+                <td class="actions">
+                    <button class="edit" data-id="${user.user_id}">Edit</button>
+                    <button class="delete" data-id="${user.user_id}">Delete</button>
+                </td>
+            </tr>
+        `).join("");
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        tbody.innerHTML = `<tr><td colspan='4'>Error: Network error.Please try again</td></tr>`;
+        return;
+    }
 }
 
 
@@ -200,3 +230,16 @@ function loadReviewsPage(){
   `).join("")
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    const defaultSection = "dashboard";
+    const defaultLink = document.querySelector(`aside.sidebar a[data-section="${defaultSection}"]`);
+
+    if (defaultLink) {
+        document.querySelectorAll("aside.sidebar a").forEach(a => a.classList.remove("active"));
+        defaultLink.classList.add("active");
+
+        const sectionTitle = document.getElementById("section-title");
+        if(sectionTitle) sectionTitle.innerText = defaultSection.charAt(0).toUpperCase() + defaultSection.slice(1);
+        loadContent(defaultSection);
+    }
+});
