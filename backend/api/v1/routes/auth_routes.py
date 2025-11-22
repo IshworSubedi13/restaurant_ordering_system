@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
+
+from backend.api.v1.models.activity_model import log_activity
 from backend.api.v1.models.user_model import (
     add_user,
     find_user_by_email,
@@ -25,7 +27,7 @@ def register():
         "password": data.get("password"),
         "role": data.get("role", "user")
     })
-
+    log_activity("person_add", f"New user registered: {user.name}")
     return jsonify({"message": "User created", "user_id": str(user.id)}), 201
 
 
