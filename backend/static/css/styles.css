@@ -221,6 +221,7 @@ tr:hover {
     padding: 1.5rem;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     flex: 1;
+    margin-top: 20px;
 }
 
 .activity-section h3 {
