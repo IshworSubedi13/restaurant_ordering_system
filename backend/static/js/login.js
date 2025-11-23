@@ -2,18 +2,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("login-form");
     const errorMessage = document.getElementById("error-message");
     const successMessage = document.getElementById("success-message");
-    const loginBtn = document.getElementById("login-btn");
     const btnText = document.getElementById("btn-text");
     const btnLoading = document.getElementById("btn-loading");
 
-    // Auto-redirect if already logged in
     const storedUser = JSON.parse(localStorage.getItem("user"));
     if (storedUser) {
-        if (storedUser.role === "admin") {
-            window.location.href = "/admin-dashboard";
-        } else {
-            window.location.href = "/dashboard";
-        }
+        const redirectUrl = storedUser.role === "admin" ? "/admin-dashboard" : "/dashboard";
+        window.location.href = redirectUrl;
+        return;
     }
 
     form.addEventListener("submit", async (e) => {
@@ -23,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const email = document.getElementById("email").value.trim();
         const password = document.getElementById("password").value.trim();
+
         btnText.style.display = "none";
         btnLoading.style.display = "inline-block";
 
@@ -42,15 +39,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 successMessage.textContent = "Login successful! Redirecting...";
                 successMessage.style.display = "block";
 
-                setTimeout(() => {
-                    if (data.user.role === "admin") {
-                        window.location.href = "/admin-dashboard";
-                    } else {
-                        window.location.href = "/dashboard";
-                    }
-                }, 1000);
+                const redirectUrl = data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
+                window.location.href = redirectUrl;
+
             } else {
-                const msg = data.error || data.message || data.detail || "Invalid email or password.";
+                const msg = data.error || data.message || "Invalid email or password.";
                 errorMessage.textContent = msg;
                 errorMessage.style.display = "block";
             }
@@ -63,4 +56,3 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 });
-
