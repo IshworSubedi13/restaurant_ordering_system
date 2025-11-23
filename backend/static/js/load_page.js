@@ -244,5 +244,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const sectionTitle = document.getElementById("section-title");
         if(sectionTitle) sectionTitle.innerText = defaultSection.charAt(0).toUpperCase() + defaultSection.slice(1);
         loadContent(defaultSection);
+        sectionLoaders[defaultSection]?.();
     }
 });
