@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 
+from backend.api.v1.models.activity_model import log_activity
 from backend.api.v1.models.category_model import (
     list_all_categories,
     find_category_by_id,
@@ -45,6 +46,7 @@ def create_category_route():
     data = request.get_json()
     try:
         category = add_category(data)
+        log_activity("category", f"Category added: {category.name}")
         return jsonify(category_to_dict(category)), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -59,6 +61,7 @@ def update_category_route(category_id):
     data = request.get_json()
     try:
         updated = update_category(category_id, data)
+        log_activity("category", f"Category updated: {updated.name}")
         return jsonify(category_to_dict(updated)), 200
     except:
         return jsonify({"error": "Category not found"}), 404
@@ -71,7 +74,11 @@ def delete_category_route(category_id):
     if claims.get("role") != "admin":
         return jsonify({"error": "Admin access required"}), 403
     try:
+        category = find_category_by_id(category_id)
+        if not category:
+            return jsonify({"error": "Category not found"}), 404
         delete_category(category_id)
+        log_activity("category", f"Category deleted: {category.name}")
         return jsonify({"message": "Category deleted"}), 200
     except:
         return jsonify({"error": "Category not found"}), 404
