@@ -1,3 +1,4 @@
+// Adds click event listeners to all sidebar links to handle section switching and active class toggling
 document.querySelectorAll("aside.sidebar a").forEach(link => {
     link.addEventListener("click", (e) => {
         e.preventDefault();
@@ -13,14 +14,14 @@ document.querySelectorAll("aside.sidebar a").forEach(link => {
         }
     });
 });
-
+// Closes the sidebar and the mobile overlay (for responsive view)
 function closeSidebar() {
     const sidebar = document.getElementById('sidebar');
     const mobileOverlay = document.getElementById('mobile-overlay');
     if (sidebar) sidebar.classList.remove('active');
     if (mobileOverlay) mobileOverlay.classList.remove('active');
 }
-
+// Object mapping each section to its respective loader function
 const sectionLoaders = {
     dashboard: () => {
     if (typeof loadCustomerCount === "function") loadCustomerCount();
@@ -29,10 +30,11 @@ const sectionLoaders = {
     user: () => { if (typeof loadUsersPage === "function") loadUsersPage(); },
     order: () => { if (typeof loadOrdersPage === "function") loadOrdersPage(); },
     menu: () => { if (typeof loadMenuPage === "function") loadMenuPage(); },
-    review: () => { if (typeof loadReviewsPage === "function") loadReviewsPage(); }
+    review: () => { if (typeof loadReviewsPage === "function") loadReviewsPage(); },
+    category: () => { if (typeof loadCategoryPage === "function") loadCategoryPage(); }
 };
 
-
+// Loads HTML content of a specific section and calls the corresponding loader
 async function loadContent(section){
     const contentDiv = document.getElementById("content");
     if (!contentDiv) return;
@@ -71,7 +73,7 @@ const Orders = [
     status: "Pending"
   }
 ];
-
+// Loads orders into the orders table (mock data for demo)
 function loadOrdersPage() {
     const tbody = document.getElementById("orders-body");
 
@@ -115,7 +117,7 @@ const menus = [
     image: "https://img.freepik.com/free-photo/high-angle-assortment-desserts-with-straws-chocolate_23-2148603243.jpg?semt=ais_hybrid&w=740&q=80"
   }
 ]
-
+// Loads menu items into the menu table (mock data for demo)
 function loadMenuPage(){
   const body = document.getElementById("menu-body")
   body.innerHTML = menus.map(menu => `
@@ -133,8 +135,96 @@ function loadMenuPage(){
     </tr>
   `).join("")
 }
+// Loads categories into the category table using API call and checks for admin access
+async function loadCategoryPage() {
+    const body = document.getElementById("category-body");
+    if (!body) return;
 
-// Load users
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        body.innerHTML = "<tr><td colspan='4'>Unauthorized (no token)</td></tr>";
+        return;
+    }
+
+    if (!user || user.role.toLowerCase() !== "admin") {
+        body.innerHTML = "<tr><td colspan='4'>Unauthorized (admin only)</td></tr>";
+        document.getElementById("addCategoryBtn").style.display = "none";
+        return;
+    }
+
+    document.getElementById("addCategoryBtn").style.display = "inline-flex";
+
+    body.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
+
+    try {
+        const response = await fetch("/api/v1/categories/", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            body.innerHTML = `<tr><td colspan='4'>Error: ${data.error || "Failed to load categories"}</td></tr>`;
+            return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            body.innerHTML = "<tr><td colspan='4'>No categories found</td></tr>";
+            return;
+        }
+
+        body.innerHTML = data.map(category => `
+            <tr>
+                <td>${category.id || category.category_id}</td>
+                <td>${category.name}</td>
+                <td>${category.description || ""}</td>
+                <td class="actions">
+                    <button class="edit" onclick="startEditCategory('${category.id}', '${category.name}', '${category.description || ""}')">Edit</button>
+                    <button class="delete" onclick="deleteCategory('${category.id}')">Delete</button>
+                </td>
+            </tr>
+        `).join("");
+
+        loadCategoryModalScript();
+
+    } catch (error) {
+        console.error("Error fetching categories:", error);
+        body.innerHTML = "<tr><td colspan='4'>Network Error. Please try again.</td></tr>";
+    }
+}
+// Loads the category modal script dynamically to initialize modal functionality
+function loadCategoryModalScript() {
+    if (window.categoryModalScriptLoaded) {
+        if (typeof initializeCategoryModal === 'function') {
+            initializeCategoryModal();
+        }
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.src = '/static/js/category_model.js';
+
+    script.onload = function() {
+        window.categoryModalScriptLoaded = true;
+        if (typeof initializeCategoryModal === 'function') {
+            initializeCategoryModal();
+        }
+    };
+
+    script.onerror = function() {
+        console.error('Failed to load category modal script');
+    };
+
+    document.head.appendChild(script);
+}
+
+// Loads users table using API and checks for admin access
 async function loadUsersPage(){
   const tbody = document.getElementById("users-body")
   if (!tbody) return;
@@ -214,7 +304,7 @@ const Reviews = [
     rating: 4
   }
 ]
-
+// Loads reviews into the reviews table (mock data for demo)
 function loadReviewsPage(){
   const tbody = document.getElementById("reviews-body")
 
@@ -232,7 +322,7 @@ function loadReviewsPage(){
     </tr>
   `).join("")
 }
-
+// Initializes default section on DOMContentLoaded (sets dashboard as default)
 document.addEventListener("DOMContentLoaded", () => {
     const defaultSection = "dashboard";
     const defaultLink = document.querySelector(`aside.sidebar a[data-section="${defaultSection}"]`);
