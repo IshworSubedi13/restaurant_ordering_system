@@ -2,17 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>login</title>
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Register</title>
     <link
       rel="stylesheet"
       href="../../../frontend/templates/assets/css/login.css"
     />
+    <script src="../assets/js/register.js" defer></script>
     <link
       href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
       rel="stylesheet"
     />
-    <script src="../assest/js/login.js" defer></script>
   </head>
   <body>
     <div class="login-container">
@@ -23,8 +27,19 @@
               <img src=" " alt="Logo" />
             </div>
 
-            <h3 class="title">Log in to your account</h3>
-            <form id="loginform" class="login-form">
+            <h3 class="title">Register your account</h3>
+            <form id="loginform" class="register-form">
+              <div class="email-field">
+                <label for="name"> Full Name</label>
+                <input
+                  type="text"
+                  id="name"
+                  class="name"
+                  placeholder="Enter your email"
+                  required
+                />
+                <div id="nameError" class="error"></div>
+              </div>
               <div class="email-field">
                 <label for="email">Email <span class="required">*</span></label>
                 <input
@@ -54,13 +69,23 @@
                 <div class="error" id="passwordError"></div>
               </div>
 
-              <button type="submit" class="signin-btn">Sign In</button>
-            </form>
+              <div class="password-field">
+                <label for="confirmPassword">Confirm Your Password </label>
+                <div class="password-wrapper">
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    class="password"
+                    placeholder="Confirm your password"
+                    required
+                  />
+                  <i class="bx bx-hide show-hide" id="togglePasswords"></i>
+                </div>
+                <div class="error" id="passwordErrors"></div>
+              </div>
 
-            <div class="signup">
-              <p>Don't have an account?</p>
-              <a href="./register.html">Sign up</a>
-            </div>
+              <button type="submit" class="signin-btn">Register</button>
+            </form>
           </div>
         </div>
       </div>
