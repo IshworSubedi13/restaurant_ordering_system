@@ -65,13 +65,14 @@ label {
   color: #555;
   display: block;
   margin-top: 10px;
+  line-height: 30px;
 }
 
 .required {
   color: red;
 }
 
-input[type="email"]
+input[type="email"], .name
 {
   width: 100%;
   padding: 10px;
@@ -151,7 +152,8 @@ input[type="email"]
 .error {
   color: red;
   font-size: 0.85rem;
-  margin-top: 4px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 
 .invalid input {
