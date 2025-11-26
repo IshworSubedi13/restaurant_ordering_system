@@ -1,0 +1,61 @@
+.lang-switcher {
+    display: flex;
+    gap: 0.3rem;
+    margin-left: 1rem;
+    align-items: center;
+}
+
+.lang-switcher button {
+    background: transparent;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 0.2rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 500;
+    min-width: 35px;
+    transition: all 0.3s ease;
+}
+
+.lang-switcher button:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+
+.lang-switcher button.active {
+    background: #e67e22;
+    border-color: #e67e22;
+    color: white;
+}
+
+
+@media (max-width: 768px) {
+    #nav-menu {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        background: #111;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        left: 0;
+        padding: 1rem 0;
+        border-radius: 5px;
+    }
+
+    .lang-switcher {
+        margin-left: 0;
+        order: 999;
+        justify-content: center;
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .lang-switcher button {
+        min-width: 50px;
+    }
+}
+
