@@ -91,50 +91,98 @@ function loadOrdersPage() {
     `).join("");
 }
 
-const menus = [
-  {
-    menu_id: 1,
-    name: "Cheese Burger",
-    category_id: 3,
-    price: 5.99,
-    available: true,
-    image: "https://thumbs.dreamstime.com/b/close-up-four-cheese-pizza-slice-close-up-shot-four-cheese-pizza-perfectly-melted-cheese-stretchy-gooey-ready-327216466.jpg"
-  },
-  {
-    menu_id: 2,
-    name: "Large Fries",
-    category_id: 2,
-    price: 2.49,
-    available: true,
-    image: "https://img.freepik.com/free-vector/crispy-golden-french-fries-illustration_1308-167222.jpg?semt=ais_hybrid&w=740&q=80"
-  },
-  {
-    menu_id: 3,
-    name: "Milkshake",
-    category_id: 4,
-    price: 3.75,
-    available: false,
-    image: "https://img.freepik.com/free-photo/high-angle-assortment-desserts-with-straws-chocolate_23-2148603243.jpg?semt=ais_hybrid&w=740&q=80"
-  }
-]
-// Loads menu items into the menu table (mock data for demo)
-function loadMenuPage(){
-  const body = document.getElementById("menu-body")
-  body.innerHTML = menus.map(menu => `
-    <tr>
-      <td>${menu.menu_id}</td>
-      <td>${menu.name}</td>
-      <td>${menu.category_id}</td>
-      <td>${menu.price.toFixed(2)}</td>
-      <td>${menu.available ? "TRUE" : "FALSE"}</td>
-      <td><img src="${menu.image}" width="50" height="50"></td>
-      <td class="actions">
-        <button class="edit">Edit</button>
-        <button class="delete">Delete</button>
-      </td>
-    </tr>
-  `).join("")
+// Loads menus into the menu table using API call and checks for admin access
+async function loadMenuPage() {
+    const body = document.getElementById("menu-body");
+    if (!body) return;
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        body.innerHTML = "<tr><td colspan='7'>Unauthorized (no token)</td></tr>";
+        return;
+    }
+
+    if (!user || user.role.toLowerCase() !== "admin") {
+        body.innerHTML = "<tr><td colspan='7'>Unauthorized (admin only)</td></tr>";
+        document.getElementById("addMenuBtn").style.display = "none";
+        return;
+    }
+
+    document.getElementById("addMenuBtn").style.display = "inline-flex";
+
+    body.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
+
+    try {
+        const response = await fetch("/api/v1/menus/", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            body.innerHTML = `<tr><td colspan='7'>Error: ${data.error || "Failed to load menus"}</td></tr>`;
+            return;
+        }
+
+        if (!Array.isArray(data) || data.length === 0) {
+            body.innerHTML = "<tr><td colspan='7'>No menu items found</td></tr>";
+            return;
+        }
+
+        body.innerHTML = data.map(menu => `
+            <tr>
+                <td>${menu.id}</td>
+                <td>${menu.name}</td>
+                <td>${menu.category.name}</td>
+                <td>${menu.price}</td>
+                <td>${menu.available ? "Yes" : "No"}</td>
+                <td>${menu.image ? `<img src="${menu.image}" alt="${menu.name}" style="height:50px;">` : ""}</td>
+                <td class="actions">
+                    <button class="edit" onclick="startEditMenu('${menu.id}','${menu.name}',${menu.price},'${menu.category.id}',${menu.available})">Edit</button>
+                    <button class="delete" onclick="deleteMenu('${menu.id}')">Delete</button>
+                </td>
+            </tr>
+        `).join("");
+
+        loadMenuModalScript();
+
+    } catch (error) {
+        console.error("Error fetching menus:", error);
+        body.innerHTML = "<tr><td colspan='7'>Network Error. Please try again.</td></tr>";
+    }
 }
+
+// Loads the menu modal script dynamically to initialize modal functionality
+function loadMenuModalScript() {
+    if (window.menuModalScriptLoaded) {
+        if (typeof initializeMenuModal === 'function') {
+            initializeMenuModal();
+        }
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.src = '/static/js/menu_modal.js';
+
+    script.onload = function() {
+        window.menuModalScriptLoaded = true;
+        if (typeof initializeMenuModal === 'function') {
+            initializeMenuModal();
+        }
+    };
+
+    script.onerror = function() {
+        console.error('Failed to load menu modal script');
+    };
+
+    document.head.appendChild(script);
+}
+
 // Loads categories into the category table using API call and checks for admin access
 async function loadCategoryPage() {
     const body = document.getElementById("category-body");
