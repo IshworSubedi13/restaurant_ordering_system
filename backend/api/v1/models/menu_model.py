@@ -1,16 +1,15 @@
 from mongoengine import Document, StringField, FloatField, BooleanField, DateTimeField, ReferenceField
 import datetime
-
 from backend.api.v1.models.category_model import Category
 
 
 class Menu(Document):
     name = StringField(required=True)
     price = FloatField(required=True)
-    category=ReferenceField(Category, required=True)
+    category = ReferenceField(Category, required=True)
     image = StringField()
     available = BooleanField(default=True)
-    created_at = DateTimeField(default=lambda: datetime.datetime.now(tz=datetime.timezone.utc))
+    created_at = DateTimeField(default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
 
 def menu_to_dict(menu):
@@ -37,7 +36,8 @@ def find_menu_by_id(menu_id):
 
 
 def add_menu(data):
-    category = Category.objects(name=data["category_name"]).first()
+    category_id = data.get("category_id")
+    category = Category.objects(id=category_id).first()
     if not category:
         raise ValueError("Category not found")
 
@@ -67,8 +67,8 @@ def update_menu(menu_id, data):
     if "image" in data:
         menu.image = data["image"]
 
-    if "category_name" in data:
-        category = Category.objects(name=data["category_name"]).first()
+    if "category_id" in data:
+        category = Category.objects(id=data["category_id"]).first()
         if not category:
             raise ValueError("Category not found")
         menu.category = category
