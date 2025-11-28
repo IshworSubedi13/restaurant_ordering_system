@@ -4,21 +4,66 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>order</title>
-    <link rel="stylesheet" href="../assets/css/order.css" />
+    <link rel="stylesheet" href="../static/css/order.css" />
   </head>
   <body>
-    <button class="add-btn">+ Add New</button>
+    <button class="add-btn" id="addOrderBtn">+ Add New</button>
     <table>
       <thead>
         <tr>
           <th>Order ID</th>
           <th>User ID</th>
           <th>Menu Items</th>
+          <th>Total Price</th>
           <th>Status</th>
           <th>Actions</th>
         </tr>
       </thead>
       <tbody id="orders-body"></tbody>
     </table>
+ <!-- Add Order Modal -->
+<div class="modal" id="addOrderModal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add New Order</h2>
+          <button class="close-btn" id="closeModalBtn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <form id="orderForm">
+            <div class="form-group">
+              <label for="orderMenu">Menu Item</label>
+              <select id="orderMenu" class="form-control" required>
+                <option value="">Select a menu</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="orderQuantity">Quantity</label>
+              <input type="number" id="orderQuantity" class="form-control" value="1" min="1" required>
+            </div>
+            <div class="form-group">
+  <label for="orderPrice">Price</label>
+  <input type="text" id="orderPrice" class="form-control" value="$0.00" readonly>
+</div>
+<div class="form-group">
+  <label for="orderTotal">Total Price</label>
+  <input type="text" id="orderTotal" class="form-control" value="$0.00" readonly>
+</div>
+             <div class="form-group">
+            <label for="orderStatus">Status</label>
+            <select id="orderStatus" class="form-control">
+              <option value="preparing">Preparing</option>
+              <option value="completed">Completed</option>
+              <option value="cancelled">Cancelled</option>
+            </select>
+          </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-secondary" id="cancelBtn">Cancel</button>
+          <button class="add-btn" id="saveOrderBtn">Save Order</button>
+        </div>
+      </div>
+    </div>
+
   </body>
 </html>
