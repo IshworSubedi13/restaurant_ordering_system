@@ -13,6 +13,11 @@ class Menu(Document):
 
 
 def menu_to_dict(menu):
+    try:
+        category = menu.category
+    except Exception:
+        category = None
+
     return {
         "id": str(menu.id),
         "name": menu.name,
@@ -20,20 +25,17 @@ def menu_to_dict(menu):
         "image": menu.image,
         "available": menu.available,
         "category": {
-            "id": str(menu.category.id),
-            "name": menu.category.name,
-            "description": menu.category.description
+            "id": str(category.id) if category else None,
+            "name": category.name if category else "Unknown",
+            "description": category.description if category else "Category was deleted"
         }
     }
-
 
 def list_all_menu():
     return Menu.objects()
 
-
 def find_menu_by_id(menu_id):
     return Menu.objects.get(id=menu_id)
-
 
 def add_menu(data):
     category_id = data.get("category_id")
@@ -50,7 +52,6 @@ def add_menu(data):
     )
     menu.save()
     return menu
-
 
 def update_menu(menu_id, data):
     menu = find_menu_by_id(menu_id)

@@ -26,6 +26,8 @@ const sectionLoaders = {
     dashboard: () => {
     if (typeof loadCustomerCount === "function") loadCustomerCount();
     if (typeof loadActivity === "function") loadActivity();
+    if (typeof loadTotalRevenue === "function") loadTotalRevenue();
+    if (typeof loadTotalOrders === "function") loadTotalOrders();
     },
     user: () => { if (typeof loadUsersPage === "function") loadUsersPage(); },
     order: () => { if (typeof loadOrdersPage === "function") loadOrdersPage(); },
@@ -54,42 +56,81 @@ async function loadContent(section){
     }
 }
 
-const Orders = [
-  {
-    order_id: "1",
-    user_id: "1",
-    menu_items: [
-      { name: "Pizza", qty: 1 },
-      { name: "Burger", qty: 2 }
-    ],
-    status: "Delivered"
-  },
-  {
-    order_id: "2",
-    user_id: "2",
-    menu_items: [
-      { name: "Coke", qty: 1 }
-    ],
-    status: "Pending"
-  }
-];
-// Loads orders into the orders table (mock data for demo)
-function loadOrdersPage() {
+// Load orders into the orders table
+async function loadOrdersPage() {
     const tbody = document.getElementById("orders-body");
+    if (!tbody) return;
 
-    tbody.innerHTML = Orders.map(order => `
-        <tr>
-          <td>${order.order_id}</td>
-          <td>${order.user_id}</td>
-          <td>${order.menu_items.map(item => `${item.name} (x${item.qty})`).join(", ")}</td>
-          <td>${order.status}</td>
-          <td class="actions">
-            <button class="edit">Edit</button>
-            <button class="delete">Delete</button>
-          </td>
-        </tr>
-    `).join("");
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+    if (!token) {
+        tbody.innerHTML = "<tr><td colspan='5'>Unauthorized</td></tr>";
+        return;
+    }
+
+    tbody.innerHTML = "<tr><td colspan='5'>Loading...</td></tr>";
+
+    try {
+    const res = await fetch("/api/v1/orders/", {
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    tbody.innerHTML = data.length
+        ? data.map(order => {
+            const itemsStr = order.items
+                .map(i => `${i.name} (x${i.quantity}) @ $${i.ordered_price.toFixed(2)}`)
+                .join("<br>");
+            const total = order.total_price.toFixed(2);
+
+            return `
+                <tr>
+                    <td>${order.id}</td>
+                    <td>${order.user.name}</td>
+                    <td>${itemsStr}</td>
+                    <td>$${total}</td>
+                    <td>${order.status}</td>
+                    <td class="actions">
+                        ${user.role === "admin" ? `
+                            <button class="edit" onclick='startEditOrder(${JSON.stringify(order).replace(/'/g,"\\'")})'>Edit</button>
+                            <button class="delete" onclick="deleteOrder('${order.id}')">Delete</button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `;
+        }).join("")
+        : "<tr><td colspan='6'>No orders found</td></tr>";
+
+        loadOrderModalScript();
+
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = "<tr><td colspan='5'>Failed to load orders</td></tr>";
+    }
 }
+function loadOrderModalScript() {
+    if (window.orderModalScriptLoaded) {
+        if (typeof initializeOrderModal === 'function') initializeOrderModal();
+        return;
+    }
+
+    const script = document.createElement('script');
+    script.src = '/static/js/order_modal.js';
+    script.defer = true;
+
+    script.onload = function() {
+        window.orderModalScriptLoaded = true;
+        if (typeof initializeOrderModal === 'function') initializeOrderModal();
+    };
+
+    script.onerror = function() {
+        console.error('Failed to load order modal script');
+    };
+
+    document.head.appendChild(script);
+}
+
 
 // Loads menus into the menu table using API call and checks for admin access
 async function loadMenuPage() {
@@ -98,62 +139,63 @@ async function loadMenuPage() {
 
     const user = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
+    const addBtn = document.getElementById("addMenuBtn");
 
     if (!token) {
         body.innerHTML = "<tr><td colspan='7'>Unauthorized (no token)</td></tr>";
+        loadMenuModalScript();
         return;
     }
 
     if (!user || user.role.toLowerCase() !== "admin") {
         body.innerHTML = "<tr><td colspan='7'>Unauthorized (admin only)</td></tr>";
-        document.getElementById("addMenuBtn").style.display = "none";
+        if (addBtn) addBtn.style.display = "none";
+        loadMenuModalScript();
         return;
     }
 
-    document.getElementById("addMenuBtn").style.display = "inline-flex";
+    if (addBtn) addBtn.style.display = "inline-flex";
 
     body.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
 
     try {
         const response = await fetch("/api/v1/menus/", {
             method: "GET",
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
+            headers: { "Authorization": `Bearer ${token}` }
         });
 
         const data = await response.json();
 
         if (!response.ok) {
             body.innerHTML = `<tr><td colspan='7'>Error: ${data.error || "Failed to load menus"}</td></tr>`;
+            loadMenuModalScript();
             return;
         }
 
         if (!Array.isArray(data) || data.length === 0) {
             body.innerHTML = "<tr><td colspan='7'>No menu items found</td></tr>";
-            return;
+        } else {
+            body.innerHTML = data.map(menu => `
+                <tr>
+                    <td>${menu.id}</td>
+                    <td>${menu.name}</td>
+                    <td>${menu.category.name}</td>
+                    <td>${menu.price}</td>
+                    <td>${menu.available ? "Yes" : "No"}</td>
+                    <td>${menu.image ? `<img src="${menu.image}" alt="${menu.name}" style="height:50px;">` : ""}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="startEditMenu('${menu.id}','${menu.name}',${menu.price},'${menu.category.id}',${menu.available})">Edit</button>
+                        <button class="delete" onclick="deleteMenu('${menu.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join("");
         }
-
-        body.innerHTML = data.map(menu => `
-            <tr>
-                <td>${menu.id}</td>
-                <td>${menu.name}</td>
-                <td>${menu.category.name}</td>
-                <td>${menu.price}</td>
-                <td>${menu.available ? "Yes" : "No"}</td>
-                <td>${menu.image ? `<img src="${menu.image}" alt="${menu.name}" style="height:50px;">` : ""}</td>
-                <td class="actions">
-                    <button class="edit" onclick="startEditMenu('${menu.id}','${menu.name}',${menu.price},'${menu.category.id}',${menu.available})">Edit</button>
-                    <button class="delete" onclick="deleteMenu('${menu.id}')">Delete</button>
-                </td>
-            </tr>
-        `).join("");
-
         loadMenuModalScript();
 
     } catch (error) {
         console.error("Error fetching menus:", error);
         body.innerHTML = "<tr><td colspan='7'>Network Error. Please try again.</td></tr>";
+        loadMenuModalScript();
     }
 }
 
@@ -183,6 +225,7 @@ function loadMenuModalScript() {
     document.head.appendChild(script);
 }
 
+
 // Loads categories into the category table using API call and checks for admin access
 async function loadCategoryPage() {
     const body = document.getElementById("category-body");
@@ -190,19 +233,22 @@ async function loadCategoryPage() {
 
     const user = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
+    const addBtn = document.getElementById("addCategoryBtn");
 
     if (!token) {
         body.innerHTML = "<tr><td colspan='4'>Unauthorized (no token)</td></tr>";
+        loadCategoryModalScript();
         return;
     }
 
     if (!user || user.role.toLowerCase() !== "admin") {
         body.innerHTML = "<tr><td colspan='4'>Unauthorized (admin only)</td></tr>";
-        document.getElementById("addCategoryBtn").style.display = "none";
+        if (addBtn) addBtn.style.display = "none";
+        loadCategoryModalScript();
         return;
     }
 
-    document.getElementById("addCategoryBtn").style.display = "inline-flex";
+    if (addBtn) addBtn.style.display = "inline-flex";
 
     body.innerHTML = "<tr><td colspan='4'>Loading...</td></tr>";
 
@@ -219,33 +265,36 @@ async function loadCategoryPage() {
 
         if (!response.ok) {
             body.innerHTML = `<tr><td colspan='4'>Error: ${data.error || "Failed to load categories"}</td></tr>`;
+            loadCategoryModalScript();
             return;
         }
 
         if (!Array.isArray(data) || data.length === 0) {
             body.innerHTML = "<tr><td colspan='4'>No categories found</td></tr>";
-            return;
+        } else {
+            body.innerHTML = data.map(category => `
+                <tr>
+                    <td>${category.id || category.category_id}</td>
+                    <td>${category.name}</td>
+                    <td>${category.description || ""}</td>
+                    <td class="actions">
+                        <button class="edit" onclick="startEditCategory('${category.id}', '${category.name}', '${category.description || ""}')">Edit</button>
+                        <button class="delete" onclick="deleteCategory('${category.id}')">Delete</button>
+                    </td>
+                </tr>
+            `).join("");
         }
 
-        body.innerHTML = data.map(category => `
-            <tr>
-                <td>${category.id || category.category_id}</td>
-                <td>${category.name}</td>
-                <td>${category.description || ""}</td>
-                <td class="actions">
-                    <button class="edit" onclick="startEditCategory('${category.id}', '${category.name}', '${category.description || ""}')">Edit</button>
-                    <button class="delete" onclick="deleteCategory('${category.id}')">Delete</button>
-                </td>
-            </tr>
-        `).join("");
-
+        // Always initialize modal, even if table is empty
         loadCategoryModalScript();
 
     } catch (error) {
         console.error("Error fetching categories:", error);
         body.innerHTML = "<tr><td colspan='4'>Network Error. Please try again.</td></tr>";
+        loadCategoryModalScript();
     }
 }
+
 // Loads the category modal script dynamically to initialize modal functionality
 function loadCategoryModalScript() {
     if (window.categoryModalScriptLoaded) {
