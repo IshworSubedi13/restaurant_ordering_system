@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Create Account - Register</title>
-    <link rel="stylesheet" href="../../static/css/register.css">
-    <script src="../../static/js/register.js"></script>
+     <link rel="stylesheet" href="{{ url_for('static', filename='css/register.css') }}">
+
 </head>
 <body>
 <div class="register-container">
@@ -45,9 +45,11 @@ password" required>
         </div>
         <button type="submit" class="btn-register">Create Account</button>
         <div class="login-link">
-            Already have an account? <a href="#">Sign in</a>
+            Already have an account? <a href={{ url_for('admin_login') }}>Sign in</a>
         </div>
     </form>
 </div>
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
 </body>
+
 </html>
