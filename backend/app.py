@@ -16,6 +16,10 @@ def create_app():
     def home():
         return "Welcome to the Restaurant Management System API"
 
+    @app.route("/register")
+    def user_register():
+        return render_template("pages/register.html")
+
     @app.route("/admin/login")
     def admin_login():
         return render_template("pages/admin_login.html")
