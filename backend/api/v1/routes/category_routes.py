@@ -23,6 +23,20 @@ def get_all_categories_route():
     categories = list_all_categories()
     return jsonify([category_to_dict(c) for c in categories]), 200
 
+# @category_bp.get("/all")
+# @jwt_required()
+# def get_all_categories():
+#     claims = get_jwt()
+#     if claims.get("role") != "user":
+#         return jsonify({"error": "User access required"}), 403
+#     categories = list_all_categories()
+#     return jsonify([category_to_dict(c) for c in categories]), 200
+
+@category_bp.get("/all")
+def get_all_categories():
+    categories = list_all_categories()
+    return jsonify([category_to_dict(c) for c in categories]), 200
+
 
 @category_bp.get("/<category_id>")
 @jwt_required()

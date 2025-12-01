@@ -3,6 +3,8 @@ from backend.api.extensions import init_db, jwt
 from backend.api.config import Config
 from backend.api.v1.routes import register_blueprints
 
+from flask_cors import CORS
+
 def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
@@ -11,6 +13,16 @@ def create_app():
     jwt.init_app(app)
 
     register_blueprints(app)
+
+    CORS(
+        app,
+        resources={r"/api/*": {"origins": [
+            "http://127.0.0.1:5500",
+            "http://localhost:5500",
+        ]}},
+        supports_credentials=True,
+    )
+    
 
     @app.route("/")
     def home():
