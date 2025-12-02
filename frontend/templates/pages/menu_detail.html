@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu Item Details</title>
+    <link rel="stylesheet" href="../assets/css/menu_detail.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <button class="back-button" onclick="goBack()">
+            <i class="fas fa-arrow-left"></i>
+            Back to Menu
+        </button>
+    </div>
+
+    <div class="item-details" id="item-details">
+        <!-- Content will be populated by JavaScript -->
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="reviews-section">
+        <div class="reviews-header">
+            <h2 class="reviews-title">Customer Reviews</h2>
+            <button class="add-review-btn" onclick="openReviewModal()">
+                <i class="fas fa-plus"></i>
+                Add Review
+            </button>
+        </div>
+
+        <div class="rating-summary" id="rating-summary">
+            <!-- Rating summary will be populated by JavaScript -->
+        </div>
+
+        <div class="reviews-list" id="reviews-list">
+            <!-- Reviews will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <!-- Add Review Modal -->
+    <div class="review-modal" id="review-modal">
+        <div class="review-modal-content">
+            <h3>Write a Review</h3>
+            <form class="review-form" id="review-form">
+                <div class="rating-input">
+                    <label>Your Rating</label>
+                    <div class="star-rating" id="star-rating">
+                        <span class="star" data-rating="1">★</span>
+                        <span class="star" data-rating="2">★</span>
+                        <span class="star" data-rating="3">★</span>
+                        <span class="star" data-rating="4">★</span>
+                        <span class="star" data-rating="5">★</span>
+                    </div>
+                </div>
+                <textarea placeholder="Share your experience with this dish..." required></textarea>
+                <div class="review-form-actions">
+                    <button type="button" class="cancel-btn" onclick="closeReviewModal()">Cancel</button>
+                    <button type="submit" class="submit-review-btn">Submit Review</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="related-items">
+        <h2>You Might Also Like</h2>
+        <div class="related-grid" id="related-items">
+            <!-- Related items will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+<script src="../assets/js/menu_detail.js"></script>
+</body>
+</html>
