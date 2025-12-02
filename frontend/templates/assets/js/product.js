@@ -1,92 +1,94 @@
-const menuItems = [
-  {
-    id: 1,
-    name: "Garlic Bread",
-    category: "starters",
-    price: 4.5,
-    description: "Freshly baked bread with garlic butter and herbs",
-    image:
-      "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 2,
-    name: "Bruschetta",
-    category: "starters",
-    price: 5.9,
-    description: "Toasted bread topped with tomatoes, garlic, and basil",
-    image:
-      "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 3,
-    name: "Margherita Pizza",
-    category: "mains",
-    price: 12.9,
-    description: "Classic pizza with tomato sauce, mozzarella, and basil",
-    image:
-      "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 4,
-    name: "Spaghetti Carbonara",
-    category: "mains",
-    price: 14.5,
-    description: "Pasta with eggs, cheese, pancetta, and black pepper",
-    image:
-      "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 5,
-    name: "Grilled Salmon",
-    category: "mains",
-    price: 16.9,
-    description: "Fresh salmon fillet with lemon butter sauce and vegetables",
-    image:
-      "https://images.unsplash.com/photo-1467003909585-2f8a72700288?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 6,
-    name: "Tiramisu",
-    category: "desserts",
-    price: 6.5,
-    description:
-      "Classic Italian dessert with coffee-soaked ladyfingers and mascarpone",
-    image:
-      "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 7,
-    name: "Chocolate Lava Cake",
-    category: "desserts",
-    price: 7.9,
-    description: "Warm chocolate cake with a molten chocolate center",
-    image:
-      "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 8,
-    name: "House Red Wine",
-    category: "drinks",
-    price: 5.5,
-    description: "Glass of our finest house red wine",
-    image:
-      "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-  {
-    id: 9,
-    name: "Fresh Lemonade",
-    category: "drinks",
-    price: 3.9,
-    description: "Homemade lemonade with fresh mint",
-    image:
-      "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
-  },
-];
+// const menuItems = [
+//   {
+//     id: 1,
+//     name: "Garlic Bread",
+//     category: "starters",
+//     price: 4.5,
+//     description: "Freshly baked bread with garlic butter and herbs",
+//     image:
+//       "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 2,
+//     name: "Bruschetta",
+//     category: "starters",
+//     price: 5.9,
+//     description: "Toasted bread topped with tomatoes, garlic, and basil",
+//     image:
+//       "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 3,
+//     name: "Margherita Pizza",
+//     category: "mains",
+//     price: 12.9,
+//     description: "Classic pizza with tomato sauce, mozzarella, and basil",
+//     image:
+//       "https://images.unsplash.com/photo-1604068549290-dea0e4a305ca?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 4,
+//     name: "Spaghetti Carbonara",
+//     category: "mains",
+//     price: 14.5,
+//     description: "Pasta with eggs, cheese, pancetta, and black pepper",
+//     image:
+//       "https://images.unsplash.com/photo-1572695157366-5e585ab2b69f?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 5,
+//     name: "Grilled Salmon",
+//     category: "mains",
+//     price: 16.9,
+//     description: "Fresh salmon fillet with lemon butter sauce and vegetables",
+//     image:
+//       "https://images.unsplash.com/photo-1467003909585-2f8a72700288?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 6,
+//     name: "Tiramisu",
+//     category: "desserts",
+//     price: 6.5,
+//     description:
+//       "Classic Italian dessert with coffee-soaked ladyfingers and mascarpone",
+//     image:
+//       "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 7,
+//     name: "Chocolate Lava Cake",
+//     category: "desserts",
+//     price: 7.9,
+//     description: "Warm chocolate cake with a molten chocolate center",
+//     image:
+//       "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 8,
+//     name: "House Red Wine",
+//     category: "drinks",
+//     price: 5.5,
+//     description: "Glass of our finest house red wine",
+//     image:
+//       "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+//   {
+//     id: 9,
+//     name: "Fresh Lemonade",
+//     category: "drinks",
+//     price: 3.9,
+//     description: "Homemade lemonade with fresh mint",
+//     image:
+//       "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
+//   },
+// ];
 
 const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
 const token = localStorage.getItem("access_token");
+const BACKEND_BASE_URL = "http://127.0.0.1:5000";
 
 let cart = [];
+let menuItems = [];
 
 const menuCategoriesContainer = document.querySelector(".menu-categories");
 const menuItemsContainer = document.getElementById("menu-items");
@@ -172,8 +174,18 @@ async function initCategories() {
   }
 }
 
+async function fetchMenuItems() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/menus/all`);
+    menuItems = await res.json();
+    renderMenuItems("all");
+  } catch (error) {
+    console.error("Error fetching menu items:", error);
+  }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-  renderMenuItems("all");
+  fetchMenuItems();
   initCategories();
   setupEventListeners();
 });
@@ -184,22 +196,26 @@ function renderMenuItems(category) {
   const filteredItems =
     category === "all"
       ? menuItems
-      : menuItems.filter((item) => item.category === category);
+      : menuItems.filter((item) => slugify(item?.category?.name) === category);
 
   filteredItems.forEach((item) => {
     const menuItemElement = document.createElement("div");
     menuItemElement.className = "menu-item";
     menuItemElement.dataset.id = item.id;
 
+    const imageUrl = item?.image?.startsWith("/static")
+      ? `${BACKEND_BASE_URL}${item?.image}`
+      : item?.image;
+
     menuItemElement.innerHTML = `
-      <div class="item-image" style="background-image: url('${item.image}')">
+      <div class="item-image" style="background-image: url('${imageUrl}')">
       </div>
       <div class="item-details">
         <div class="item-header">
-          <h3 class="item-name">${item.name}</h3>
-          <span class="item-price">€${item.price.toFixed(2)}</span>
+          <h3 class="item-name">${item?.name}</h3>
+          <span class="item-price">€${item?.price.toFixed(2)}</span>
         </div>
-        <p class="item-description">${item.description}</p>
+        <p class="item-description">${item?.category?.description}</p>
         <div class="item-actions">
           <div class="quantity-controls">
             <button class="quantity-btn minus">-</button>
