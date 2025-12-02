@@ -40,6 +40,20 @@ def get_all_menu_route():
     menus = list_all_menu()
     return jsonify([menu_to_dict(m) for m in menus]), 200
 
+# @menu_bp.get("/all")
+# @jwt_required()
+# def get_all_menu_route():
+#     if get_jwt().get("role") != "user":
+#         return jsonify({"error": "Admin access required"}), 403
+
+#     menus = list_all_menu()
+#     return jsonify([menu_to_dict(m) for m in menus]), 200
+
+@menu_bp.get("/all")
+def get_all_menu():
+    menus = list_all_menu()
+    return jsonify([menu_to_dict(m) for m in menus]), 200
+
 
 @menu_bp.post("/")
 @jwt_required()

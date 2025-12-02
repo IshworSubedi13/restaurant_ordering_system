@@ -140,7 +140,7 @@ nav a:hover {
 
 /* Content Sections */
 .content {
-	padding: 2rem 2rem;
+	padding: 1rem 2rem;
 	max-width: 1200px;
 	margin: 0 auto;
 }
@@ -264,11 +264,11 @@ footer a:hover {
 	}
 }
 
-.page-title {
+/* .page-title {
 	text-align: center;
 	color: #2c3e50;
 	padding: 2rem 0;
-}
+} */
 
 .page-title h1 {
 	font-size: 2.5rem;
@@ -561,7 +561,7 @@ footer a:hover {
 
 .page-title {
 	text-align: center;
-	margin-bottom: 2rem;
+	/* margin-bottom: 2rem; */
 	color: #2c3e50;
 	padding: 2rem 0 1rem;
 }
