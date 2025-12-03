@@ -17,7 +17,6 @@ body {
     padding: 2rem;
 }
 
-/* Header */
 .header {
     margin-bottom: 2rem;
 }
@@ -41,7 +40,6 @@ body {
     background: #34495e;
 }
 
-/* Item Details Layout */
 .item-details {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -100,7 +98,6 @@ body {
     margin-bottom: 2rem;
 }
 
-/* Order Controls */
 .order-controls {
     background: white;
     padding: 2rem;
@@ -178,7 +175,6 @@ body {
     background: #d35400;
 }
 
-/* Nutritional Info */
 .nutritional-info {
     background: white;
     padding: 1.5rem;
@@ -219,7 +215,6 @@ body {
     margin-top: 0.3rem;
 }
 
-/* Ingredients */
 .ingredients {
     background: white;
     padding: 1.5rem;
@@ -253,7 +248,6 @@ body {
     font-weight: bold;
 }
 
-/* Reviews Section */
 .reviews-section {
     background: white;
     padding: 2rem;
@@ -356,7 +350,6 @@ body {
     border-radius: 4px;
 }
 
-/* Reviews List */
 .reviews-list {
     display: flex;
     flex-direction: column;
@@ -415,7 +408,6 @@ body {
     line-height: 1.6;
 }
 
-/* Add Review Modal */
 .review-modal {
     display: none;
     position: fixed;
@@ -524,7 +516,6 @@ body {
     background: #d35400;
 }
 
-/* Related Items */
 .related-items {
     margin-top: 4rem;
 }
@@ -592,7 +583,6 @@ body {
     font-weight: 600;
 }
 
-/* Notification */
 .notification {
     position: fixed;
     top: 20px;
@@ -616,7 +606,6 @@ body {
     }
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
