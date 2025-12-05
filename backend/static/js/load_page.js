@@ -378,47 +378,103 @@ async function loadUsersPage(){
 }
 
 
-const Reviews = [
-  {
-    review_id: 1,
-    name: "Ram",
-    menu_name: "Cheese Burger",
-    comment: "Very juicy and tasty!",
-    rating: 5
-  },
-  {
-    review_id: 2,
-    name: "Roshan",
-    menu_name: "Milkshake",
-    comment: "Too sweet for me.",
-    rating: 3
-  },
-  {
-    review_id: 3,
-    name: "Sujan",
-    menu_name: "Large Fries",
-    comment: "Crispy perfection.",
-    rating: 4
-  }
-]
-// Loads reviews into the reviews table (mock data for demo)
-function loadReviewsPage(){
-  const tbody = document.getElementById("reviews-body")
+// Loads reviews into the reviews table from API
+async function loadReviewsPage() {
+  const tbody = document.getElementById("reviews-body");
+  if (!tbody) return;
 
-  tbody.innerHTML = Reviews.map(r => `
-    <tr>
-      <td>${r.review_id}</td>
-      <td>${r.name}</td>
-      <td>${r.menu_name}</td>
-      <td>${r.comment}</td>
-      <td>${r.rating}</td>
-      <td class="actions">
-        <button class="edit">Edit</button>
-        <button class="delete">Delete</button>
-      </td>
-    </tr>
-  `).join("")
+  const user = JSON.parse(localStorage.getItem("user"));
+  const token = localStorage.getItem("token");
+  const role = user?.role?.toLowerCase();
+
+  if (!token) {
+    tbody.innerHTML = "<tr><td colspan='6'>Unauthorized (no token)</td></tr>";
+    return;
+  }
+
+  if (!user) {
+    tbody.innerHTML = "<tr><td colspan='6'>Unauthorized (login required)</td></tr>";
+    return;
+  }
+
+  tbody.innerHTML = "<tr><td colspan='6'>Loading reviews...</td></tr>";
+
+  try {
+    const response = await fetch("/api/v1/reviews/", {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      tbody.innerHTML = `<tr><td colspan='6'>Error: ${data.error || "Failed to load reviews"}</td></tr>`;
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      tbody.innerHTML = "<tr><td colspan='6'>No reviews found</td></tr>";
+      return;
+    }
+
+    tbody.innerHTML = data.map(review => `
+      <tr>
+        <td>${review.id}</td>
+        <td>${review.user?.name || "-"}</td>
+        <td>${review.menu?.name || "-"}</td>
+        <td>${review.comment}</td>
+        <td>${review.rating}</td>
+        <td class="actions">
+          ${review.user?.id === user.id ? `<button class="edit" onclick="editReview('${review.id}')">Edit</button>` : ""}
+          ${role === "admin" || review.user?.id === user.id ? `<button class="delete" onclick="deleteReview('${review.id}')">Delete</button>` : ""}
+        </td>
+      </tr>
+    `).join("");
+
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    tbody.innerHTML = `<tr><td colspan='6'>Error: Network error. Please try again</td></tr>`;
+  }
 }
+//delete review
+async function deleteReview(reviewId) {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Unauthorized. Please login first.");
+        return;
+      }
+
+      const confirmDelete = confirm("Are you sure you want to delete this review?");
+      if (!confirmDelete) return;
+
+      try {
+        const response = await fetch(`/api/v1/reviews/${reviewId}`, {
+          method: "DELETE",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          alert(`Failed to delete review: ${data.error || "Unknown error"}`);
+          return;
+        }
+
+        alert(data.message || "Review deleted successfully");
+        loadReviewsPage();
+
+      } catch (error) {
+        console.error("Error deleting review:", error);
+        alert("Network error. Could not delete review.");
+      }
+  }
+
+
 // Initializes default section on DOMContentLoaded (sets dashboard as default)
 document.addEventListener("DOMContentLoaded", () => {
     const defaultSection = "dashboard";
