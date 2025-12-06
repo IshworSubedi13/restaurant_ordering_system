@@ -9,6 +9,12 @@ function closePopup() {
 document.addEventListener("DOMContentLoaded", () => {
   const overlay = document.getElementById("popup-overlay");
   const closeBtn = document.getElementById("popup-close");
+  const todayMenuBtn = document.getElementById("today-menu-btn");
+
+  todayMenuBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    openPopup();
+  });
 
   // setTimeout for to set the time to make popup the annuncement box
   setTimeout(openPopup, 600);
