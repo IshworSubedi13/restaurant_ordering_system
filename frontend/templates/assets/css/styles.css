@@ -29,6 +29,7 @@ header {
 	font-size: 1.8rem;
 	font-weight: bold;
 	color: #e67e22;
+	cursor: pointer;
 }
 
 .site_logo a {
@@ -785,17 +786,17 @@ iframe {
 }
 @media screen and (max-width: 400px) {
 	.popup-body {
-			width: 64%;
+			width: 64%;	
 			margin: 0 auto;height: calc(100% - 80px);
 			overflow-y: auto;
 			padding-right: 10px;
 			scrollbar-width: thin;
 		}
-
+	
 	.popup-body::-webkit-scrollbar {
 			width: 6px;
 		}
-
+	
 		.popup-body::-webkit-scrollbar-thumb {
 			background: rgba(255, 255, 255, 0.4);
 			border-radius: 10px;
@@ -813,4 +814,8 @@ iframe {
 .popup-body li .price {
 	font-weight: bold;
 	font-size: 14px;
+}
+
+#popup-overlay.show {
+	display: flex;
 }
