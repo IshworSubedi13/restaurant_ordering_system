@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu - Espoo Restaurant</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="../static/css/frontend/styles.css" type="text/css" />
+    <script src="../static/js/frontend/product.js" defer></script>
+    <script src="../static/js/frontend/hamburger.js" defer></script>
+  </head>
+  <body>
+    <header>
+      <div class="site_logo"><a href="../index.html"> Restaurant </a></div>
+      <nav>
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <ul id="nav-menu">
+          <li><a href="/">Home</a></li>
+          <li><a href="/product">Menu</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>
+      <section class="page-title">
+        <h1>Our Menu</h1>
+        <p>Delicious meals made with fresh, locally sourced ingredients</p>
+      </section>
+
+      <section class="content">
+        <div class="menu-categories">
+          <!-- <button class="category-btn active" data-category="all">
+            All Items
+          </button>
+          <button class="category-btn" data-category="starters">
+            Starters
+          </button>
+          <button class="category-btn" data-category="mains">
+            Main Courses
+          </button>
+          <button class="category-btn" data-category="desserts">
+            Desserts
+          </button>
+          <button class="category-btn" data-category="drinks">Drinks</button> -->
+        </div>
+
+        <div class="menu-items" id="menu-items"></div>
+
+        <div class="cart-section">
+          <div class="cart-header">
+            <h2 class="cart-title">Your Order</h2>
+            <span id="cart-count">0 items</span>
+          </div>
+          <div class="cart-items" id="cart-items">
+            <div class="empty-cart">Your cart is empty</div>
+          </div>
+          <div class="cart-total">
+            <span>Total:</span>
+            <span id="cart-total">€0.00</span>
+          </div>
+          <button class="checkout-btn" id="checkout-btn">
+            Proceed to Checkout
+          </button>
+        </div>
+      </section>
+    </main>
+
+<div id="orderConfirmationModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <!-- Animated Success Icon -->
+        <div class="success-animation">
+            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+            </svg>
+        </div>
+
+        <div class="modal-header">
+            <h2>Order Confirmed! 🎉</h2>
+            <p class="order-subtitle">Thank you for your purchase</p>
+        </div>
+
+        <div class="order-details">
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-receipt"></i>
+                    <span>Order ID:</span>
+                </div>
+                <div class="detail-value order-id">#0000</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-clock"></i>
+                    <span>Placed At:</span>
+                </div>
+                <div class="detail-value order-time">Just now</div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-hourglass-half"></i>
+                    <span>Status:</span>
+                </div>
+                <div class="status-badge pending">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Pending
+                </div>
+            </div>
+
+            <div class="detail-row">
+                <div class="detail-label">
+                    <i class="fas fa-truck"></i>
+                    <span>Estimated Delivery:</span>
+                </div>
+                <div class="detail-value delivery-time">
+                    <i class="fas fa-clock"></i>
+                    25-35 minutes
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Section -->
+        <div class="order-summary-section">
+            <h3>
+                <i class="fas fa-file-invoice-dollar"></i>
+                Order Summary
+            </h3>
+
+            <div class="summary-items">
+                <!-- Cart items will be inserted here dynamically -->
+
+                <div class="summary-item">
+                    <span>Subtotal</span>
+                    <span class="amount" id="subtotal">€0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Delivery Fee</span>
+                    <span class="amount" id="delivery-fee">€0.00</span>
+                </div>
+                <div class="summary-item">
+                    <span>Tax</span>
+                    <span class="amount" id="tax">€0.00</span>
+                </div>
+                <div class="summary-divider"></div>
+                <div class="summary-item total">
+                    <strong>Total Amount</strong>
+                    <strong class="amount total-amount" id="total-amount">€0.00</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Method -->
+        <div class="payment-method">
+            <div class="detail-label">
+                <i class="fas fa-credit-card"></i>
+                <span>Payment Method:</span>
+            </div>
+            <div class="payment-details">
+                <span class="payment-type">Cash on Delivery</span>
+                <span class="payment-status">(To be paid on delivery)</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+            <button class="btn btn-secondary" id="continue-shopping-btn">
+                <i class="fas fa-shopping-bag"></i>
+                Continue Shopping
+            </button>
+            <button class="btn btn-primary" id="view-orders-btn">
+                <i class="fas fa-clipboard-list"></i>
+                View My Orders
+            </button>
+        </div>
+
+        <!-- Close button -->
+        <button class="modal-close" id="close-modal-btn">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+    <footer>
+      <p>Copyright &copy; 2025. All rights reserved</p>
+    </footer>
+  </body>
+</html>

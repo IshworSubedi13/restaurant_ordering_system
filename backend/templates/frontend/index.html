@@ -10,12 +10,13 @@
     />
     <link
       rel="stylesheet"
-      href="../../frontend/templates/assets/css/styles.css"
+      href="../static/css/frontend/styles.css"
       type="text/css"
     />
-    <link rel="stylesheet" href="assets/css/translate.css" type="text/css" />
-    <script src="assets/js/translation.js"></script>
-    <script src="assets/js/announcement.js"></script>
+    <link rel="stylesheet" href="../static/css/frontend/translate.css" type="text/css" />
+    <script src="../static/js/frontend/translation.js"></script>
+    <script src="../static/js/frontend/announcement.js"></script>
+    <script src="../static/js/frontend/profile_avatar.js" defer></script>
   </head>
   <body>
     <header>
@@ -27,14 +28,29 @@
           <span></span>
         </div>
         <ul id="nav-menu">
-          <li><a href="index.html" data-key="home">Home</a></li>
-          <li><a href="pages/product.html" data-key="menu">Menu</a></li>
-          <li><a href="pages/contact.html" data-key="contact">Contact</a></li>
+          <li><a href="/" data-key="home">Home</a></li>
+          <li><a href="/product" data-key="menu">Menu</a></li>
+          <li><a href="/contact" data-key="contact">Contact</a></li>
+            <!-- Profile Avatar -->
+                <li id="profile-item">
+                    <div class="profile-avatar">
+                        <div id="avatar" class="avatar" aria-label="User profile">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div id="dropdown" class="dropdown">
+                            <!-- Will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </li>
           <li class="lang-switcher">
             <button data-lang="en">EN</button>
             <button data-lang="fi">FI</button>
           </li>
+          <div id="user-section">
+            <!-- JavaScript will populate this based on login status -->
+        </div>
         </ul>
+
       </nav>
     </header>
     <main>
@@ -133,5 +149,40 @@
     <footer>
       <p data-key="footer">Copyright &copy; 2025. All rights reserved</p>
     </footer>
+<!--  <script>-->
+<!--        // Check login status on index page load-->
+<!--        document.addEventListener('DOMContentLoaded', function() {-->
+<!--            const user = JSON.parse(localStorage.getItem('user') || 'null');-->
+<!--            const token = localStorage.getItem('token');-->
+
+<!--            if (user && token) {-->
+<!--                // Show personalized welcome-->
+<!--                const welcomeDiv = document.getElementById('welcome-message');-->
+<!--                const userNameSpan = document.getElementById('user-name');-->
+
+<!--                if (welcomeDiv && userNameSpan) {-->
+<!--                    userNameSpan.textContent = user.name || user.email.split('@')[0];-->
+<!--                    welcomeDiv.style.display = 'block';-->
+<!--                }-->
+
+<!--                // Update any existing profile dropdown-->
+<!--                if (typeof updateUIForLoggedInUser === 'function') {-->
+<!--                    updateUIForLoggedInUser(user);-->
+<!--                }-->
+
+<!--                // Load cart count-->
+<!--                if (typeof loadActiveCartCount === 'function') {-->
+<!--                    loadActiveCartCount();-->
+<!--                }-->
+<!--            }-->
+
+<!--            // Check URL parameters-->
+<!--            const urlParams = new URLSearchParams(window.location.search);-->
+<!--            if (urlParams.get('logged_in') === 'true') {-->
+<!--                // Optional: Show welcome toast/message-->
+<!--                console.log('User logged in successfully');-->
+<!--            }-->
+<!--        });-->
+<!--    </script>-->
   </body>
 </html>

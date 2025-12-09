@@ -39,8 +39,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 successMessage.textContent = "Login successful! Redirecting...";
                 successMessage.style.display = "block";
 
-                const redirectUrl = data.user.role === "admin" ? "/admin-dashboard" : "/dashboard";
-                window.location.href = redirectUrl;
+                const redirectUrl = data.user.role === "admin" ? "/admin-dashboard" : "/";
+                setTimeout(() => {
+                    window.location.href = redirectUrl;
+                }, 1500);
 
             } else {
                 const msg = data.error || data.message || "Invalid email or password.";

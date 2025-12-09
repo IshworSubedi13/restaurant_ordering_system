@@ -11,7 +11,7 @@ review_bp = Blueprint("review_bp", __name__)
 
 @review_bp.post("/")
 @jwt_required()
-def create_review_route():
+def create_review():
     user_id = get_jwt_identity()
     data = request.get_json()
     comment = data.get("comment")
@@ -32,13 +32,13 @@ def create_review_route():
 
 @review_bp.get("/")
 @jwt_required()
-def get_reviews_route():
+def get_reviews():
     reviews = list_all_reviews()
     return jsonify([review_to_dict(r) for r in reviews]), 200
 
 @review_bp.get("/<review_id>")
 @jwt_required()
-def get_review_by_id_route(review_id):
+def get_review_by_id(review_id):
     review = find_review_by_id(review_id)
     if not review:
         return jsonify({"error": "Review not found"}), 404
@@ -46,7 +46,7 @@ def get_review_by_id_route(review_id):
 
 @review_bp.put("/<review_id>")
 @jwt_required()
-def update_review_route(review_id):
+def update_review(review_id):
     user_id = get_jwt_identity()
     review = find_review_by_id(review_id)
     if not review:
@@ -59,7 +59,7 @@ def update_review_route(review_id):
 
 @review_bp.delete("/<review_id>")
 @jwt_required()
-def delete_review_route(review_id):
+def delete_review(review_id):
     user_id = get_jwt_identity()
     claims = get_jwt()
     role = claims.get("role", "user")

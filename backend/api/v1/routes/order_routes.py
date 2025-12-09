@@ -115,3 +115,21 @@ def total_revenue():
         for order in orders
     )
     return jsonify({"total_revenue": revenue}), 200
+
+
+@order_bp.post("/<order_id>/cancel")
+@jwt_required()
+def user_cancel_order(order_id):
+    user_id = get_jwt_identity()
+    order = find_order_by_id(order_id)
+    if not order:
+        return jsonify({"error": "Order not found"}), 404
+
+    if str(order.user.id) != str(user_id):
+        return jsonify({"error": "Forbidden"}), 403
+    if order.status != "pending":
+        return jsonify({"error": f"Cannot cancel order with status: {order.status}"}), 400
+    order.update(status="cancelled")
+    order.save()
+
+    return jsonify(order_to_dict(order)), 200

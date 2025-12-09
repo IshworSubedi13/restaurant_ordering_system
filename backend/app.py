@@ -6,7 +6,7 @@ from backend.api.v1.routes import register_blueprints
 from flask_cors import CORS
 
 def create_app():
-    app = Flask(__name__)
+    app = Flask(__name__,template_folder='templates')
     app.config.from_object(Config)
 
     init_db(app)
@@ -22,28 +22,56 @@ def create_app():
         ]}},
         supports_credentials=True,
     )
-    
+
 
     @app.route("/")
     def home():
-        return "Welcome to the Restaurant Management System API"
+        return render_template("frontend/index.html")
+
+    @app.route("/product")
+    def menu():
+        return render_template("frontend/pages/product.html")
+
+    @app.route("/product/menu_detail")
+    def menu_detail():
+        return render_template("frontend/pages/menu_detail.html")
+
+    @app.route("/contact")
+    def contact():
+        return render_template("frontend/pages/contact.html")
+
+    @app.route("/orders")
+    def order():
+        return render_template("frontend/pages/order.html")
+
+    @app.route("/pages/<page_name>.html")
+    def serve_html_page(page_name):
+        template_path = f"pages/{page_name}.html"
+        try:
+            return render_template(template_path)
+        except:
+            return "Page not found", 404
 
     @app.route("/register")
     def user_register():
-        return render_template("pages/register.html")
+        return render_template("admin/pages/register.html")
+
+    @app.route("/login")
+    def login():
+        return render_template("admin/pages/admin_login.html")
 
     @app.route("/admin/login")
     def admin_login():
-        return render_template("pages/admin_login.html")
+        return render_template("admin/pages/admin_login.html")
 
     @app.route("/admin-dashboard")
     def admin_dashboard():
-        return render_template("index.html")
+        return render_template("admin/index.html")
 
     @app.route("/admin/<page>")
     def admin_page(page):
         try:
-            return render_template(f"pages/{page}.html")
+            return render_template(f"admin/pages/{page}.html")
         except:
             return "Page not found", 404
 
