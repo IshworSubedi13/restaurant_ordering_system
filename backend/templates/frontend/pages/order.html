@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Orders - Restaurant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="../static/css/frontend/order.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+    <header>
+        <div class="site_logo">My Restaurant</div>
+    </header>
+
+    <div class="container">
+        <button class="back-button" onclick="goBack()">
+          <i class="fas fa-arrow-left"></i>
+          Back to Home
+        </button>
+        <section class="page-title">
+            <h1>My Orders</h1>
+            <p>Track your current orders and view order history</p>
+        </section>
+
+        <div class="order-tabs">
+            <button class="tab-btn active" data-tab="current">Current Orders</button>
+            <button class="tab-btn" data-tab="history">Order History</button>
+        </div>
+        <div class="loading" id="loading">
+            <i class="fas fa-spinner"></i>
+            <p>Loading your orders...</p>
+        </div>
+        <div class="orders-container" id="current-orders" style="display: none;">
+            <!-- Orders will be loaded dynamically -->
+        </div>
+        <div class="orders-container" id="order-history" style="display: none;">
+            <!-- Orders will be loaded dynamically -->
+        </div>
+        <div class="error-state" id="error-state" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h3>Failed to Load Orders</h3>
+            <p id="error-message">Unable to load your orders. Please try again later.</p>
+            <button class="btn-start-order" onclick="loadOrders()">Retry</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>Copyright &copy; 2025. All rights reserved</p>
+    </footer>
+  <script src="../static/js/frontend/order.js"></script>
+</body>
+</html>

@@ -116,7 +116,7 @@ function loadOrderModalScript() {
     }
 
     const script = document.createElement('script');
-    script.src = '/static/js/order_modal.js';
+    script.src = '/static/js/admin/order_modal.js';
     script.defer = true;
 
     script.onload = function() {
@@ -209,7 +209,7 @@ function loadMenuModalScript() {
     }
 
     const script = document.createElement('script');
-    script.src = '/static/js/menu_modal.js';
+    script.src = '/static/js/admin/menu_modal.js';
 
     script.onload = function() {
         window.menuModalScriptLoaded = true;
@@ -305,7 +305,7 @@ function loadCategoryModalScript() {
     }
 
     const script = document.createElement('script');
-    script.src = '/static/js/category_model.js';
+    script.src = '/static/js/admin/category_model.js';
 
     script.onload = function() {
         window.categoryModalScriptLoaded = true;
