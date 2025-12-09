@@ -1,62 +1,22 @@
-// sample of a review dummy data
-const sampleReviews = {
-  1: [
-    {
-      id: 1,
-      userName: "Sarah Johnson",
-      rating: 5,
-      comment:
-        "Absolutely delicious! The garlic bread was perfectly crispy and the marinara sauce was amazing. Will definitely order again!",
-      date: "2024-01-15",
-      userInitials: "SJ",
-    },
-    {
-      id: 2,
-      userName: "Mike Chen",
-      rating: 4,
-      comment:
-        "Great flavor and good portion size. Could use a bit more garlic for my taste, but overall very good.",
-      date: "2024-01-10",
-      userInitials: "MC",
-    },
-    {
-      id: 3,
-      userName: "Emma Davis",
-      rating: 5,
-      comment:
-        "Best garlic bread I've ever had! The herbs were fresh and the bread was perfectly toasted. Highly recommend!",
-      date: "2024-01-08",
-      userInitials: "ED",
-    },
-  ],
-  2: [
-    {
-      id: 1,
-      userName: "Alex Rodriguez",
-      rating: 4,
-      comment:
-        "Fresh and flavorful bruschetta. The tomatoes were perfectly ripe and the balsamic glaze added a nice touch.",
-      date: "2024-01-12",
-      userInitials: "AR",
-    },
-  ],
-  3: [
-    {
-      id: 1,
-      userName: "Lisa Wang",
-      rating: 5,
-      comment:
-        "Authentic Italian pizza! The crust was perfect and the ingredients were top quality. Will be coming back for more!",
-      date: "2024-01-14",
-      userInitials: "LW",
-    },
-  ],
-};
-
+// ================== CONFIG ==================
 const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
 const BACKEND_BASE_URL = "http://127.0.0.1:5000";
 
-// read the menu items from the product page which is saved in it
+// Read JWT token saved after login (MUST be stored on origin 127.0.0.1:5500)
+const accessToken = localStorage.getItem("access_token");
+// Debug only (optional)
+console.log("Review token from localStorage:", accessToken);
+
+function authHeaders(extra = {}) {
+  if (!accessToken) return extra;
+  return {
+    Authorization: `Bearer ${accessToken}`,
+    ...extra,
+  };
+}
+
+// ================== HELPERS ==================
+
 function getSelectedMenu() {
   const raw = localStorage.getItem("selectedMenu");
   if (!raw) return null;
@@ -72,9 +32,44 @@ async function fetchAllMenus() {
   return await res.json();
 }
 
-// reviewing the current item
-function getReviewsForItem(itemId) {
-  return sampleReviews[itemId] || [];
+// ---- Reviews: fetch from backend & filter by menu ----
+
+async function fetchReviewsForItem(itemId) {
+  // Back-end returns all reviews; we filter on the front-end
+  const res = await fetch(`${API_BASE_URL}/reviews/`, {
+    headers: authHeaders(),
+  });
+
+  if (!res.ok) {
+    console.error("Failed to fetch reviews", res.status);
+    return [];
+  }
+
+  const allReviews = await res.json();
+
+  const filtered = allReviews.filter(
+    (review) => review.menu && review.menu.id === itemId
+  );
+
+  return filtered.map((review) => {
+    const name = review.user?.name || "Anonymous";
+    const initials = name
+      .split(" ")
+      .filter(Boolean)
+      .map((p) => p[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
+    return {
+      id: review.id,
+      userName: name,
+      rating: review.rating,
+      comment: review.comment,
+      date: review.created_at,
+      userInitials: initials,
+    };
+  });
 }
 
 function calculateRatingStats(reviews) {
@@ -115,7 +110,7 @@ function formatDate(dateString) {
   return new Date(dateString).toLocaleDateString("en-US", options);
 }
 
-// Render item details from localStorage
+// ================== RENDER ITEM DETAILS ==================
 
 async function renderItemDetails() {
   const item = getSelectedMenu();
@@ -191,14 +186,14 @@ async function renderItemDetails() {
   `;
 
   addEventListeners(item);
-  renderReviews(item.id);
+  renderReviews(item.id); // async, but we don't need to await
   renderRelatedItems(item?.category?.name, item.id);
 }
 
-// Review function
+// ================== REVIEWS UI ==================
 
-function renderReviews(itemId) {
-  const reviews = getReviewsForItem(itemId);
+async function renderReviews(itemId) {
+  const reviews = await fetchReviewsForItem(itemId);
   const stats = calculateRatingStats(reviews);
 
   const ratingSummary = document.getElementById("rating-summary");
@@ -256,7 +251,7 @@ function renderReviews(itemId) {
   }
 }
 
-// function for the cart and the quantity means price
+// ================== CART / QUANTITY ==================
 
 function addEventListeners(item) {
   let quantity = 1;
@@ -293,7 +288,6 @@ function addEventListeners(item) {
   });
 }
 
-// storing the cart to the localstorage
 function addToCart(item, quantity) {
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
   const existingItem = cart.find((c) => c.id === item.id);
@@ -318,7 +312,7 @@ function addToCart(item, quantity) {
   console.log("Cart updated:", cart);
 }
 
-// Review model
+// ================== REVIEW MODAL / STARS ==================
 
 let currentRating = 0;
 
@@ -377,7 +371,31 @@ function setupStarRating() {
   });
 }
 
-function handleReviewSubmission(event) {
+// ---- Create review (POST) ----
+
+async function createReview(itemId, rating, comment) {
+  const res = await fetch(`${API_BASE_URL}/reviews/`, {
+    method: "POST",
+    headers: authHeaders({
+      "Content-Type": "application/json",
+    }),
+    body: JSON.stringify({
+      menu_id: itemId,
+      rating,
+      comment,
+    }),
+  });
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Failed to create review:", res.status, text);
+    throw new Error(`Failed to create review: ${res.status} ${text}`);
+  }
+
+  return await res.json();
+}
+
+async function handleReviewSubmission(event) {
   event.preventDefault();
 
   if (currentRating === 0) {
@@ -394,27 +412,20 @@ function handleReviewSubmission(event) {
   const currentItem = getSelectedMenu();
   if (!currentItem) return;
 
-  const newReview = {
-    id: Date.now(),
-    userName: "You",
-    rating: currentRating,
-    comment: comment,
-    date: new Date().toISOString().split("T")[0],
-    userInitials: "Y",
-  };
-
   const itemId = currentItem.id;
-  if (!sampleReviews[itemId]) {
-    sampleReviews[itemId] = [];
-  }
-  sampleReviews[itemId].unshift(newReview);
 
-  closeReviewModal();
-  renderReviews(itemId);
-  showNotification("Thank you for your review!");
+  try {
+    await createReview(itemId, currentRating, comment);
+    closeReviewModal();
+    await renderReviews(itemId);
+    showNotification("Thank you for your review!");
+  } catch (err) {
+    console.error(err);
+    alert("Sorry, something went wrong while saving your review.");
+  }
 }
 
-// time to rende the notification message to display on the screen
+// ================== NOTIFICATION ==================
 
 function showNotification(message) {
   const notification = document.createElement("div");
@@ -428,7 +439,8 @@ function showNotification(message) {
   }, 3000);
 }
 
-// rendering the related item and viewing them
+// ================== RELATED ITEMS ==================
+
 async function renderRelatedItems(categoryName, currentItemId) {
   const allItems = await fetchAllMenus();
 
@@ -468,7 +480,6 @@ async function renderRelatedItems(categoryName, currentItemId) {
 }
 
 function viewItem(itemId) {
-  // view the related item when clicked to the item
   fetchAllMenus().then((allItems) => {
     const item = allItems.find((i) => i.id === itemId);
     if (!item) return;
@@ -481,7 +492,7 @@ function goBack() {
   window.history.back();
 }
 
-//review and star button function handler for the rendering
+// ================== EVENT BINDING ==================
 
 document.addEventListener("DOMContentLoaded", () => {
   renderItemDetails();

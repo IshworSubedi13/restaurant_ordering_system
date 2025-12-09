@@ -736,7 +736,7 @@ iframe {
 
 .popup {
 	/* background: #2c3e50; */
-	background-image: url(../image/todays_menu.jpg);
+	background-image: url(../../assets/todays_menu.jpg);
 	background-size: cover;
 	background-position: center;
 	background-repeat: no-repeat;
