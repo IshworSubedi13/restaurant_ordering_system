@@ -22,7 +22,6 @@ async function fetchAllMenus() {
   return await res.json();
 }
 
-// Get current user
 function getCurrentUser() {
   try {
     const userStr = localStorage.getItem("user");
@@ -30,12 +29,11 @@ function getCurrentUser() {
     const user = JSON.parse(userStr);
     currentUser = user;
     return user;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
 
-// Fetch reviews
 async function fetchReviewsForItem(itemId) {
   try {
     const res = await fetch(`${API_BASE_URL}/reviews/`);
@@ -61,13 +59,14 @@ async function fetchReviewsForItem(itemId) {
       const initials = name.substring(0, 2).toUpperCase();
       const numericRating = Number(review.rating) || 0;
 
-      const isOwnReview = user && review.user && String(review.user.id) === String(user.id);
+      const isOwnReview =
+        user && review.user && String(review.user.id) === String(user.id);
 
       if (isOwnReview) {
         userReview = {
           id: review.id,
           rating: numericRating,
-          comment: review.comment || ""
+          comment: review.comment || "",
         };
       }
 
@@ -79,37 +78,12 @@ async function fetchReviewsForItem(itemId) {
         comment: review.comment || "",
         date: review.created_at,
         userInitials: initials,
-        isOwnReview: isOwnReview
+        isOwnReview,
       };
     });
-  } catch (error) {
+  } catch {
     return [];
   }
-}
-
-function calculateRatingStats(reviews) {
-  if (reviews.length === 0) {
-    return {
-      average: 0,
-      total: 0,
-      distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
-    };
-  }
-
-  const total = reviews.length;
-  const sum = reviews.reduce((acc, review) => acc + review.rating, 0);
-  const average = sum / total;
-
-  const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-  reviews.forEach((review) => {
-    distribution[review.rating]++;
-  });
-
-  return {
-    average: Math.round(average * 10) / 10,
-    total,
-    distribution,
-  };
 }
 
 function getStarRating(rating) {
@@ -139,13 +113,6 @@ async function renderItemDetails() {
     ? `${BACKEND_BASE_URL}${item.image}`
     : item.image;
 
-  const preparationTime = item.preparationTime || "N/A";
-  const spicyLevel = item.spicyLevel || "Not specified";
-  const allergensText = (item.allergens || []).join(", ") || "None";
-  const ingredientsList = (item.ingredients || [])
-    .map((ingredient) => `<li>${ingredient}</li>`)
-    .join("");
-
   container.innerHTML = `
     <div class="item-image">
       <img src="${imageUrl}" alt="${item.name}">
@@ -155,88 +122,16 @@ async function renderItemDetails() {
       <h1 class="item-name">${item.name}</h1>
       <div class="item-price">€${item.price.toFixed(2)}</div>
       <p class="item-description">${item.description || ""}</p>
-
-      <div class="order-controls">
-        <div class="quantity-section">
-          <span class="quantity-label">Quantity:</span>
-          <div class="quantity-controls">
-            <button class="quantity-btn minus">-</button>
-            <span class="quantity-display">1</span>
-            <button class="quantity-btn plus">+</button>
-          </div>
-        </div>
-        <button class="add-to-cart-btn" data-id="${item.id}">
-          <i class="fas fa-shopping-cart"></i>
-          Add to Cart - €${item.price.toFixed(2)}
-        </button>
-      </div>
-
-      <div class="nutritional-info">
-        <h3>Details</h3>
-        <div class="nutrition-grid">
-          <div class="nutrition-item">
-            <span class="nutrition-value">${preparationTime}</span>
-            <span class="nutrition-label">Prep Time</span>
-          </div>
-          <div class="nutrition-item">
-            <span class="nutrition-value">${spicyLevel}</span>
-            <span class="nutrition-label">Spice Level</span>
-          </div>
-          <div class="nutrition-item">
-            <span class="nutrition-value">${allergensText}</span>
-            <span class="nutrition-label">Allergens</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="ingredients">
-        <h3>Ingredients</h3>
-        <ul>
-          ${ingredientsList}
-        </ul>
-      </div>
     </div>
   `;
 
-  addEventListeners(item);
   await renderReviews(item.id);
-  renderRelatedItems(item?.category?.name, item.id);
 }
 
 async function renderReviews(itemId) {
   const reviews = await fetchReviewsForItem(itemId);
-  const stats = calculateRatingStats(reviews);
 
-  const ratingSummary = document.getElementById("rating-summary");
-  ratingSummary.innerHTML = `
-    <div class="average-rating">
-      <div class="rating-number">${stats.average}</div>
-      <div class="rating-stars">${getStarRating(stats.average)}</div>
-      <div class="total-reviews">${stats.total} reviews</div>
-    </div>
-    <div class="rating-bars">
-      ${[5, 4, 3, 2, 1]
-        .map(
-          (rating) => `
-        <div class="rating-bar">
-          <span class="rating-label">${rating} ★</span>
-          <div class="rating-progress">
-            <div class="rating-progress-fill" style="width: ${
-              stats.total > 0
-                ? (stats.distribution[rating] / stats.total) * 100
-                : 0
-            }%"></div>
-          </div>
-          <span class="rating-count">${stats.distribution[rating]}</span>
-        </div>
-      `
-        )
-        .join("")}
-    </div>
-  `;
-
-  // Add Review Button
-  const addReviewBtn = document.querySelector('.add-review-btn');
+  const addReviewBtn = document.querySelector(".add-review-btn");
   if (addReviewBtn) {
     const token = localStorage.getItem("token");
 
@@ -248,117 +143,70 @@ async function renderReviews(itemId) {
       }
       addReviewBtn.onclick = openReviewModal;
     } else {
-      addReviewBtn.innerHTML = '<i class="fas fa-plus"></i> Add Review';
       addReviewBtn.onclick = () => {
-        alert('Please login to write a review');
+        alert("Please login to write a review");
         window.location.href = "/login";
       };
     }
   }
 
   const reviewsList = document.getElementById("reviews-list");
+
   if (reviews.length === 0) {
     reviewsList.innerHTML = `
       <div class="no-reviews">
-        <p>No reviews yet. ${localStorage.getItem("token") ? 'Be the first to review this item!' : 'Log in to write a review.'}</p>
-        ${localStorage.getItem("token") ?
-          '<button class="write-first-review-btn" onclick="openReviewModal()">Write First Review</button>' :
-          '<a href="/login" class="login-to-review">Log in to review</a>'
+        <p>No reviews yet. ${
+          localStorage.getItem("token")
+            ? "Be the first to review this item!"
+            : "Log in to write a review."
+        }</p>
+        ${
+          localStorage.getItem("token")
+            ? '<button class="write-first-review-btn" onclick="openReviewModal()">Write First Review</button>'
+            : '<a href="/login" class="login-to-review">Log in to review</a>'
         }
       </div>
     `;
-  } else {
-    reviewsList.innerHTML = reviews
-      .map(
-        (review) => `
-        <div class="review-item">
-          <div class="review-header">
-            <div class="reviewer-info">
-              <div class="reviewer-avatar">${review.userInitials}</div>
-              <div>
-                <div class="reviewer-name">${review.userName}
-                  ${review.isOwnReview ? `
-                    <span class="review-actions-inline">
-                      <button class="icon-btn edit-icon" onclick="editReview('${review.id}')" title="Edit">
-                        <i class="fas fa-edit"></i>
-                      </button>
-                      <button class="icon-btn delete-icon" onclick="deleteReview('${review.id}')" title="Delete">
-                        <i class="fas fa-trash"></i>
-                      </button>
-                    </span>
-                  ` : ''}
-                </div>
-                <div class="review-date">${formatDate(review.date)}</div>
+    return;
+  }
+
+  reviewsList.innerHTML = reviews
+    .map(
+      (review) => `
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-info">
+            <div class="reviewer-avatar">${review.userInitials}</div>
+            <div>
+              <div class="reviewer-name">
+                ${review.userName}
+                ${
+                  review.isOwnReview
+                    ? `
+                  <span class="review-actions-inline">
+                    <button class="icon-btn edit-icon" onclick="editReview('${review.id}')">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="icon-btn delete-icon" onclick="deleteReview('${review.id}')">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </span>`
+                    : ""
+                }
               </div>
-            </div>
-            <div class="review-rating">
-              ${getStarRating(review.rating)}
-              <span class="review-rating-number">(${review.rating}/5)</span>
+              <div class="review-date">${formatDate(review.date)}</div>
             </div>
           </div>
-          <div class="review-content">${review.comment}</div>
+          <div class="review-rating">
+            ${getStarRating(review.rating)}
+            <span class="review-rating-number">(${review.rating}/5)</span>
+          </div>
         </div>
-      `
-      )
-      .join("");
-  }
-}
-
-function addEventListeners(item) {
-  let quantity = 1;
-  const quantityDisplay = document.querySelector(".quantity-display");
-  const addToCartBtn = document.querySelector(".add-to-cart-btn");
-
-  function updatePrice() {
-    const totalPrice = item.price * quantity;
-    addToCartBtn.innerHTML = `
-      <i class="fas fa-shopping-cart"></i>
-      Add to Cart - €${totalPrice.toFixed(2)}
-    `;
-  }
-
-  document.querySelector(".quantity-btn.plus").addEventListener("click", () => {
-    quantity++;
-    quantityDisplay.textContent = quantity;
-    updatePrice();
-  });
-
-  document
-    .querySelector(".quantity-btn.minus")
-    .addEventListener("click", () => {
-      if (quantity > 1) {
-        quantity--;
-        quantityDisplay.textContent = quantity;
-        updatePrice();
-      }
-    });
-
-  addToCartBtn.addEventListener("click", () => {
-    addToCart(item, quantity);
-    showNotification(`${quantity} ${item.name} added to cart!`);
-  });
-}
-
-function addToCart(item, quantity) {
-  let cart = JSON.parse(localStorage.getItem("cart")) || [];
-  const existingItem = cart.find((c) => c.id === item.id);
-
-  if (existingItem) {
-    existingItem.quantity += quantity;
-  } else {
-    const imageUrl = item.image?.startsWith("/static")
-      ? `${BACKEND_BASE_URL}${item.image}`
-      : item.image;
-
-    cart.push({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      quantity,
-      image: imageUrl,
-    });
-  }
-  localStorage.setItem("cart", JSON.stringify(cart));
+        <div class="review-content">${review.comment}</div>
+      </div>
+    `
+    )
+    .join("");
 }
 
 function openReviewModal() {
@@ -390,7 +238,6 @@ function openReviewModal() {
     textarea.value = "";
   }
 
-  // Update star display
   const stars = document.querySelectorAll(".star");
   stars.forEach((star, index) => {
     if (index < currentRating) {
@@ -443,18 +290,21 @@ function setupStarRating() {
 }
 
 function editReview(reviewId) {
-  console.log("Editing review:", reviewId);
-  const reviewsList = document.querySelectorAll('.review-item');
-  reviewsList.forEach(reviewItem => {
-    const editBtn = reviewItem.querySelector('.edit-icon');
+  const reviewsList = document.querySelectorAll(".review-item");
+  reviewsList.forEach((reviewItem) => {
+    const editBtn = reviewItem.querySelector(".edit-icon");
     if (editBtn && editBtn.onclick.toString().includes(reviewId)) {
-      const comment = reviewItem.querySelector('.review-content').textContent;
-      const rating = parseInt(reviewItem.querySelector('.review-rating-number').textContent.match(/\d+/)[0]);
+      const comment = reviewItem.querySelector(".review-content").textContent;
+      const rating = parseInt(
+        reviewItem
+          .querySelector(".review-rating-number")
+          .textContent.match(/\d+/)[0]
+      );
 
       userReview = {
         id: reviewId,
-        rating: rating,
-        comment: comment
+        rating,
+        comment,
       };
       openReviewModal();
       return;
@@ -463,9 +313,7 @@ function editReview(reviewId) {
 }
 
 async function deleteReview(reviewId) {
-  if (!confirm("Are you sure you want to delete your review?")) {
-    return;
-  }
+  if (!confirm("Are you sure you want to delete your review?")) return;
 
   const token = localStorage.getItem("token");
   if (!token) {
@@ -477,19 +325,15 @@ async function deleteReview(reviewId) {
     const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
       method: "DELETE",
       headers: {
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
-    if (!response.ok) {
-      throw new Error("Failed to delete review");
-    }
+    if (!response.ok) throw new Error("Failed to delete review");
+
     showNotification("Review deleted successfully");
     const item = getSelectedMenu();
-    if (item) {
-      await renderReviews(item.id);
-    }
+    if (item) await renderReviews(item.id);
   } catch (error) {
-    console.error("Delete error:", error);
     alert("Failed to delete review");
   }
 }
@@ -500,20 +344,17 @@ async function updateReview(reviewId, rating, comment) {
     alert("Please login to update your review");
     return;
   }
+
   const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({
-      rating: rating,
-      comment: comment
-    }),
+    body: JSON.stringify({ rating, comment }),
   });
 
-  const data = await response.json();
-  return data;
+  return await response.json();
 }
 
 async function createReview(itemId, rating, comment) {
@@ -522,6 +363,7 @@ async function createReview(itemId, rating, comment) {
     alert("You must log in to submit a review.");
     throw new Error("No token");
   }
+
   const res = await fetch(`${API_BASE_URL}/reviews/`, {
     method: "POST",
     headers: {
@@ -530,45 +372,44 @@ async function createReview(itemId, rating, comment) {
     },
     body: JSON.stringify({ menu_id: itemId, rating, comment }),
   });
+
   const text = await res.text();
-  let data;
   try {
-    data = JSON.parse(text);
+    return JSON.parse(text);
   } catch {
-    data = { msg: text };
+    return { msg: text };
   }
-  if (!res.ok) {
-    throw new Error(`Failed to create review`);
-  }
-  return data;
 }
 
 async function handleReviewSubmission(event) {
   event.preventDefault();
+
   if (currentRating === 0) {
     alert("Please select a rating");
     return;
   }
+
   const comment = event.target.querySelector("textarea").value.trim();
   if (!comment) {
     alert("Please write a review");
     return;
   }
+
   const currentItem = getSelectedMenu();
   if (!currentItem) return;
-  const itemId = currentItem.id;
+
   try {
     if (isEditMode && editingReviewId) {
       await updateReview(editingReviewId, currentRating, comment);
       showNotification("Review updated!");
     } else {
-      await createReview(itemId, currentRating, comment);
+      await createReview(currentItem.id, currentRating, comment);
       showNotification("Thank you for your review!");
     }
+
     closeReviewModal();
-    await renderReviews(itemId);
-  } catch (err) {
-    console.error(err);
+    await renderReviews(currentItem.id);
+  } catch {
     alert("Something went wrong");
   }
 }
@@ -581,99 +422,44 @@ function showNotification(message) {
   setTimeout(() => notification.remove(), 3000);
 }
 
-async function renderRelatedItems(categoryName, currentItemId) {
-  const allItems = await fetchAllMenus();
-  const relatedItems = allItems
-    .filter(item => item?.category?.name === categoryName && item.id !== currentItemId)
-    .slice(0, 3);
-
-  const container = document.getElementById("related-items");
-  if (relatedItems.length === 0) {
-    container.innerHTML = "<p>No related items found.</p>";
-    return;
-  }
-
-  container.innerHTML = relatedItems
-    .map(item => `
-      <div class="related-item" onclick="viewItem('${item.id}')">
-        <div class="related-item-image">
-          <img src="${item.image.startsWith("/static") ? BACKEND_BASE_URL + item.image : item.image}" alt="${item.name}">
-        </div>
-        <div class="related-item-info">
-          <h3 class="related-item-name">${item.name}</h3>
-          <div class="related-item-price">€${item.price.toFixed(2)}</div>
-        </div>
-      </div>
-    `).join("");
-}
-
-function viewItem(itemId) {
-  fetchAllMenus().then((allItems) => {
-    const item = allItems.find((i) => i.id === itemId);
-    if (item) {
-      localStorage.setItem("selectedMenu", JSON.stringify(item));
-      window.location.href = "./menu_detail.html";
-    }
-  });
-}
-
 function goBack() {
   window.location.href = "../product";
 }
 
-// Initialize
 document.addEventListener("DOMContentLoaded", () => {
   renderItemDetails();
   setupStarRating();
-  document.getElementById("review-form").addEventListener("submit", handleReviewSubmission);
+  document
+    .getElementById("review-form")
+    .addEventListener("submit", handleReviewSubmission);
 });
 
-// Add CSS for inline icons
-const iconStyle = document.createElement('style');
+// Extra CSS for inline buttons
+const iconStyle = document.createElement("style");
 iconStyle.textContent = `
   .review-actions-inline {
     display: inline-flex;
     gap: 8px;
     margin-left: 8px;
   }
-
   .icon-btn {
     background: none;
     border: none;
     cursor: pointer;
     padding: 2px 4px;
     border-radius: 3px;
-    transition: all 0.2s;
   }
-
-  .edit-icon {
-    color: #3498db;
-  }
-
-  .edit-icon:hover {
-    background: #3498db;
-    color: white;
-  }
-
-  .delete-icon {
-    color: #e74c3c;
-  }
-
-  .delete-icon:hover {
-    background: #e74c3c;
-    color: white;
-  }
-
-  .icon-btn i {
-    font-size: 14px;
-  }
+  .edit-icon { color: #3498db; }
+  .edit-icon:hover { background: #3498db; color: #fff; }
+  .delete-icon { color: #e74c3c; }
+  .delete-icon:hover { background: #e74c3c; color: #fff; }
+  .icon-btn i { font-size: 14px; }
 `;
 document.head.appendChild(iconStyle);
 
-// Make functions global
+// Expose needed functions to HTML
 window.editReview = editReview;
 window.deleteReview = deleteReview;
 window.openReviewModal = openReviewModal;
 window.closeReviewModal = closeReviewModal;
 window.goBack = goBack;
-window.viewItem = viewItem;
