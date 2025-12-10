@@ -1,21 +1,16 @@
-// ================== CONFIG ==================
 const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
 const BACKEND_BASE_URL = "http://127.0.0.1:5000";
 
-// Read JWT token saved after login (MUST be stored on origin 127.0.0.1:5500)
-const accessToken = localStorage.getItem("access_token");
-// Debug only (optional)
-console.log("Review token from localStorage:", accessToken);
-
 function authHeaders(extra = {}) {
+  const accessToken = localStorage.getItem("access_token");
+  console.log("Token from localStorage (menu_detail):", accessToken);
+
   if (!accessToken) return extra;
   return {
     Authorization: `Bearer ${accessToken}`,
     ...extra,
   };
 }
-
-// ================== HELPERS ==================
 
 function getSelectedMenu() {
   const raw = localStorage.getItem("selectedMenu");
@@ -32,13 +27,9 @@ async function fetchAllMenus() {
   return await res.json();
 }
 
-// ---- Reviews: fetch from backend & filter by menu ----
-
+// function for fetching the review and according to the menu item
 async function fetchReviewsForItem(itemId) {
-  // Back-end returns all reviews; we filter on the front-end
-  const res = await fetch(`${API_BASE_URL}/reviews/`, {
-    headers: authHeaders(),
-  });
+  const res = await fetch(`${API_BASE_URL}/reviews/`);
 
   if (!res.ok) {
     console.error("Failed to fetch reviews", res.status);
@@ -47,9 +38,16 @@ async function fetchReviewsForItem(itemId) {
 
   const allReviews = await res.json();
 
-  const filtered = allReviews.filter(
-    (review) => review.menu && review.menu.id === itemId
-  );
+  const filtered = allReviews.filter((review) => {
+    const nestedId = review.menu && review.menu.id;
+    const flatId = review.menu_id;
+    const directId = review.menu;
+    return (
+      String(nestedId) === String(itemId) ||
+      String(flatId) === String(itemId) ||
+      String(directId) === String(itemId)
+    );
+  });
 
   return filtered.map((review) => {
     const name = review.user?.name || "Anonymous";
@@ -61,11 +59,13 @@ async function fetchReviewsForItem(itemId) {
       .toUpperCase()
       .slice(0, 2);
 
+    const numericRating = Number(review.rating) || 0;
+
     return {
       id: review.id,
       userName: name,
-      rating: review.rating,
-      comment: review.comment,
+      rating: numericRating,
+      comment: review.comment || "",
       date: review.created_at,
       userInitials: initials,
     };
@@ -109,8 +109,6 @@ function formatDate(dateString) {
   const options = { year: "numeric", month: "long", day: "numeric" };
   return new Date(dateString).toLocaleDateString("en-US", options);
 }
-
-// ================== RENDER ITEM DETAILS ==================
 
 async function renderItemDetails() {
   const item = getSelectedMenu();
@@ -186,11 +184,9 @@ async function renderItemDetails() {
   `;
 
   addEventListeners(item);
-  renderReviews(item.id); // async, but we don't need to await
+  renderReviews(item.id);
   renderRelatedItems(item?.category?.name, item.id);
 }
-
-// ================== REVIEWS UI ==================
 
 async function renderReviews(itemId) {
   const reviews = await fetchReviewsForItem(itemId);
@@ -241,7 +237,10 @@ async function renderReviews(itemId) {
                 <div class="review-date">${formatDate(review.date)}</div>
               </div>
             </div>
-            <div class="review-rating">${getStarRating(review.rating)}</div>
+            <div class="review-rating">
+              ${getStarRating(review.rating)}
+              <span class="review-rating-number">(${review.rating}/5)</span>
+            </div>
           </div>
           <div class="review-content">${review.comment}</div>
         </div>
@@ -250,8 +249,6 @@ async function renderReviews(itemId) {
       .join("");
   }
 }
-
-// ================== CART / QUANTITY ==================
 
 function addEventListeners(item) {
   let quantity = 1;
@@ -312,7 +309,7 @@ function addToCart(item, quantity) {
   console.log("Cart updated:", cart);
 }
 
-// ================== REVIEW MODAL / STARS ==================
+// For review model adding section
 
 let currentRating = 0;
 
@@ -371,28 +368,48 @@ function setupStarRating() {
   });
 }
 
-// ---- Create review (POST) ----
+// for posting the review
 
 async function createReview(itemId, rating, comment) {
+  const token = localStorage.getItem("access_token");
+  if (!token) {
+    alert("You must log in to submit a review.");
+    throw new Error("No token in localStorage");
+  }
+
   const res = await fetch(`${API_BASE_URL}/reviews/`, {
     method: "POST",
-    headers: authHeaders({
+    headers: {
       "Content-Type": "application/json",
-    }),
-    body: JSON.stringify({
-      menu_id: itemId,
-      rating,
-      comment,
-    }),
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ menu_id: itemId, rating, comment }),
   });
 
+  const text = await res.text();
+  console.log("Review POST status:", res.status);
+  console.log("Review POST body:", text);
+
+  let data;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    data = { msg: text };
+  }
+
+  if (res.status === 401 && data.msg === "Token has expired") {
+    alert("Your session has expired. Please log in again.");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("currentUser");
+    window.location.href = "/login";
+    throw new Error("Token expired");
+  }
+
   if (!res.ok) {
-    const text = await res.text();
-    console.error("Failed to create review:", res.status, text);
     throw new Error(`Failed to create review: ${res.status} ${text}`);
   }
 
-  return await res.json();
+  return data;
 }
 
 async function handleReviewSubmission(event) {
@@ -425,8 +442,6 @@ async function handleReviewSubmission(event) {
   }
 }
 
-// ================== NOTIFICATION ==================
-
 function showNotification(message) {
   const notification = document.createElement("div");
   notification.className = "notification";
@@ -439,8 +454,7 @@ function showNotification(message) {
   }, 3000);
 }
 
-// ================== RELATED ITEMS ==================
-
+// to render the related items
 async function renderRelatedItems(categoryName, currentItemId) {
   const allItems = await fetchAllMenus();
 
@@ -491,8 +505,6 @@ function viewItem(itemId) {
 function goBack() {
   window.history.back();
 }
-
-// ================== EVENT BINDING ==================
 
 document.addEventListener("DOMContentLoaded", () => {
   renderItemDetails();

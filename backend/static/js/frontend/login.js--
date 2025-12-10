@@ -1,0 +1,121 @@
+// // static/js/admin/login.js
+// const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
+
+// document.addEventListener("DOMContentLoaded", () => {
+//   const form = document.getElementById("login-form");
+//   const emailInput = document.getElementById("email");
+//   const passwordInput = document.getElementById("password");
+//   const errorMessage = document.getElementById("error-message");
+//   const successMessage = document.getElementById("success-message");
+//   const loginBtn = document.getElementById("login-btn");
+//   const btnText = document.getElementById("btn-text");
+//   const btnLoading = document.getElementById("btn-loading");
+
+//   console.log("admin/login.js: DOMContentLoaded");
+
+//   if (!form || !emailInput || !passwordInput) {
+//     console.error("admin/login.js: form or inputs not found", {
+//       form,
+//       emailInput,
+//       passwordInput,
+//     });
+//     return;
+//   }
+
+//   function setLoading(isLoading) {
+//     if (!loginBtn || !btnText || !btnLoading) return;
+//     if (isLoading) {
+//       loginBtn.disabled = true;
+//       btnText.style.display = "none";
+//       btnLoading.style.display = "inline-block";
+//     } else {
+//       loginBtn.disabled = false;
+//       btnText.style.display = "inline-block";
+//       btnLoading.style.display = "none";
+//     }
+//   }
+
+//   function showError(msg) {
+//     console.log("admin/login.js: showError:", msg);
+//     if (errorMessage) {
+//       errorMessage.textContent = msg;
+//       errorMessage.style.display = msg ? "block" : "none";
+//     }
+//     if (successMessage) {
+//       successMessage.style.display = "none";
+//     }
+//   }
+
+//   function showSuccess(msg) {
+//     console.log("admin/login.js: showSuccess:", msg);
+//     if (successMessage) {
+//       successMessage.textContent = msg;
+//       successMessage.style.display = "block";
+//     }
+//     if (errorMessage) {
+//       errorMessage.style.display = "none";
+//     }
+//   }
+
+//   form.addEventListener("submit", async (e) => {
+//     e.preventDefault();
+//     console.log("admin/login.js: submit handler fired");
+
+//     const email = emailInput.value.trim();
+//     const password = passwordInput.value.trim();
+
+//     if (!email || !password) {
+//       showError("Please enter email and password.");
+//       return;
+//     }
+
+//     setLoading(true);
+//     showError("");
+
+//     try {
+//       const res = await fetch(`${API_BASE_URL}/auth/login`, {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ email, password }),
+//       });
+
+//       const data = await res.json();
+//       console.log("admin/login.js: Login response:", res.status, data);
+
+//       if (!res.ok) {
+//         showError(data.error || data.msg || "Invalid credentials");
+//         setLoading(false);
+//         return;
+//       }
+
+//       const token = data.access_token;
+//       const user = data.user;
+
+//       if (!token) {
+//         showError("No token received from server.");
+//         setLoading(false);
+//         return;
+//       }
+
+//       // 🔥 Save JWT + user
+//       localStorage.setItem("access_token", token);
+//       localStorage.setItem("currentUser", JSON.stringify(user));
+
+//       console.log(
+//         "admin/login.js: Saved access_token:",
+//         localStorage.getItem("access_token")
+//       );
+
+//       showSuccess("Login successful! Redirecting...");
+//       setTimeout(() => {
+//         window.location.href = "/";
+//       }, 500);
+//     } catch (err) {
+//       console.error("admin/login.js: Login error:", err);
+//       showError("Something went wrong. Please try again.");
+//       setLoading(false);
+//     }
+//   });
+// });
