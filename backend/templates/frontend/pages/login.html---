@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>login</title>
+    <link
+      rel="stylesheet"
+      href="../../../frontend/templates/assets/css/login.css"
+    />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
+    <script
+      src="{{ url_for('static', filename='js/frontend/login.js') }}"
+      defer
+    ></script>
+  </head>
+  <body>
+    <script>
+      const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const form = document.getElementById("loginform");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const emailError = document.getElementById("emailError");
+        const passwordError = document.getElementById("passwordError");
+        const togglePassword = document.getElementById("togglePassword");
+
+        if (!form || !emailInput || !passwordInput) {
+          console.error("Login form or inputs not found");
+          return;
+        }
+
+        console.log("INLINE login script loaded");
+
+        // show/hide password
+        if (togglePassword) {
+          togglePassword.addEventListener("click", () => {
+            const type =
+              passwordInput.getAttribute("type") === "password"
+                ? "text"
+                : "password";
+            passwordInput.setAttribute("type", type);
+            togglePassword.classList.toggle("bx-hide");
+            togglePassword.classList.toggle("bx-show");
+          });
+        }
+
+        function validateEmail() {
+          const emailPattern = /^[^@\s]+@[^@\s]+\.[a-zA-Z]{2,}$/;
+          if (!emailInput.value.trim().match(emailPattern)) {
+            if (emailError)
+              emailError.textContent = "Please enter a valid email.";
+            return false;
+          } else {
+            if (emailError) emailError.textContent = "";
+            return true;
+          }
+        }
+
+        function validatePassword() {
+          if (passwordInput.value.trim().length < 6) {
+            if (passwordError)
+              passwordError.textContent =
+                "Password must be at least 6 characters.";
+            return false;
+          } else {
+            if (passwordError) passwordError.textContent = "";
+            return true;
+          }
+        }
+
+        emailInput.addEventListener("keyup", validateEmail);
+        passwordInput.addEventListener("keyup", validatePassword);
+
+        form.addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const okEmail = validateEmail();
+          const okPassword = validatePassword();
+          if (!okEmail || !okPassword) return;
+
+          const email = emailInput.value.trim();
+          const password = passwordInput.value.trim();
+
+          try {
+            const res = await fetch(`${API_BASE_URL}/auth/login`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const data = await res.json();
+            console.log("Login response:", res.status, data);
+
+            if (!res.ok) {
+              alert(data.error || data.msg || "Invalid credentials");
+              return;
+            }
+
+            const token = data.access_token;
+            const user = data.user;
+
+            if (!token) {
+              alert("No token received from server.");
+              return;
+            }
+
+            // 🔥 save token so menu_detail can use it
+            localStorage.setItem("access_token", token);
+            localStorage.setItem("currentUser", JSON.stringify(user));
+
+            console.log(
+              "Saved access_token:",
+              localStorage.getItem("access_token")
+            );
+
+            window.location.href = "/";
+          } catch (err) {
+            console.error("Login error:", err);
+            alert("Something went wrong. Please try again.");
+          }
+        });
+      });
+    </script>
+
+    <div class="login-container">
+      <div class="login-card">
+        <div class="login-card-box">
+          <div class="login-card-box-wrapper">
+            <div class="logo">
+              <img src=" " alt="Logo" />
+            </div>
+            <!-- 
+            <h3 class="title">Log in to your account</h3> -->
+            <form id="loginform" class="login-form">
+              <div class="email-field">
+                <label for="email">Email <span class="required">*</span></label>
+                <input
+                  type="email"
+                  id="email"
+                  class="email"
+                  placeholder="Enter your email"
+                  required
+                />
+                <div id="emailError" class="error"></div>
+              </div>
+
+              <div class="password-field">
+                <label for="password"
+                  >Password <span class="required">*</span></label
+                >
+                <div class="password-wrapper">
+                  <input
+                    type="password"
+                    id="password"
+                    class="password"
+                    placeholder="Enter your password"
+                    required
+                  />
+                  <i class="bx bx-hide show-hide" id="togglePassword"></i>
+                </div>
+                <div class="error" id="passwordError"></div>
+              </div>
+
+              <button type="submit" class="signin-btn">Sign In</button>
+            </form>
+
+            <div class="signup">
+              <p>Don't have an account?</p>
+              <a href="./register.html">Sign up</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
