@@ -351,8 +351,8 @@ body {
 }
 
 .reviews-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
 }
 
@@ -516,73 +516,6 @@ body {
     background: #d35400;
 }
 
-.related-items {
-    margin-top: 4rem;
-}
-
-.related-items h2 {
-    color: #2c3e50;
-    margin-bottom: 2rem;
-    font-size: 2rem;
-    text-align: center;
-}
-
-.related-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
-}
-
-.related-item {
-    background: white;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-    transition: transform 0.3s, box-shadow 0.3s;
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-}
-
-.related-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-}
-
-.related-item-image {
-    width: 100%;
-    height: 200px;
-    overflow: hidden;
-}
-
-.related-item-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s;
-}
-
-.related-item:hover .related-item-image img {
-    transform: scale(1.05);
-}
-
-.related-item-info {
-    padding: 1.5rem;
-}
-
-.related-item-name {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-}
-
-.related-item-price {
-    font-size: 1.1rem;
-    color: #e67e22;
-    font-weight: 600;
-}
-
 .notification {
     position: fixed;
     top: 20px;
@@ -627,32 +560,7 @@ body {
     .item-price {
         font-size: 1.5rem;
     }
-
-    .quantity-section {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .nutrition-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-
-    .rating-summary {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .rating-bars {
-        width: 100%;
-    }
-
-    .review-header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .related-grid {
+    .reviews-list {
         grid-template-columns: 1fr;
     }
 }

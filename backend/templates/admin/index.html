@@ -1,64 +1,62 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard</title>
-    <link rel="stylesheet" href="../static/css/admin//styles.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-</head>
-<body>
-<!-- Mobile Overlay -->
-<div class="mobile-overlay" id="mobile-overlay"></div>
+    <link rel="stylesheet" href="../static/css/admin//styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+  </head>
+  <body>
+    <div class="mobile-overlay" id="mobile-overlay"></div>
 
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-    <h2>AdminPanel</h2>
-    <a href="#" class="active" data-section="dashboard">
+    <aside class="sidebar" id="sidebar">
+      <h2>AdminPanel</h2>
+      <a href="#" class="active" data-section="dashboard">
         <span class="material-icons">dashboard</span>
         <span>Dashboard</span>
-    </a>
-    <a href="#" data-section="order">
+      </a>
+      <a href="#" data-section="order">
         <span class="material-icons">lunch_dining</span>
         <span>Orders</span>
-    </a>
-    <a href="#" data-section="category">
+      </a>
+      <a href="#" data-section="category">
         <span class="material-icons">category</span>
         <span>Category</span>
-    </a>
-    <a href="#" data-section="menu">
+      </a>
+      <a href="#" data-section="menu">
         <span class="material-icons">menu_book</span>
         <span>Menu</span>
-    </a>
-    <a href="#" data-section="user">
+      </a>
+      <a href="#" data-section="user">
         <span class="material-icons">people</span>
         <span>Users</span>
-    </a>
-    <a href="#" data-section="review">
+      </a>
+      <a href="#" data-section="review">
         <span class="material-icons">comment</span>
         <span>Reviews</span>
-    </a>
+      </a>
 
-     <div class="sidebar-logout">
+      <div class="sidebar-logout">
         <button class="logout-button-sidebar" id="sidebar-logout-btn">
-            <span class="material-icons">logout</span>
-            <span>Logout</span>
+          <span class="material-icons">logout</span>
+          <span>Logout</span>
         </button>
-    </div>
-</aside>
+      </div>
+    </aside>
 
-<!-- Main -->
-<main class="main">
-    <header class="topbar">
+    <main class="main">
+      <header class="topbar">
         <span class="menu-toggle" id="menu-toggle">☰</span>
         <h1 id="section-title">Dashboard</h1>
-    </header>
+      </header>
 
-    <section class="content" id="content">
-
-    </section>
-</main>
-<script defer src="../static/js/admin/toogle.js"></script>
+      <section class="content" id="content"></section>
+    </main>
+    <script defer src="../static/js/admin/toogle.js"></script>
     <script defer src="../static/js/admin/data_icon.js"></script>
     <script defer src="../static/js/admin/load_page.js"></script>
     <script src="../static/js/admin/logout.js"></script>
@@ -66,5 +64,5 @@
     <script src="../static/js/admin/activity.js" defer></script>
     <script src="../static/js/admin/total_revenue.js" defer></script>
     <script src="../static/js/admin/total_orders.js" defer></script>
-</body>
+  </body>
 </html>

@@ -13,7 +13,11 @@
       href="../static/css/frontend/styles.css"
       type="text/css"
     />
-    <link rel="stylesheet" href="../static/css/frontend/translate.css" type="text/css" />
+    <link
+      rel="stylesheet"
+      href="../static/css/frontend/translate.css"
+      type="text/css"
+    />
     <script src="../static/js/frontend/translation.js"></script>
     <script src="../static/js/frontend/announcement.js"></script>
     <script src="../static/js/frontend/profile_avatar.js" defer></script>
@@ -31,26 +35,20 @@
           <li><a href="/" data-key="home">Home</a></li>
           <li><a href="/product" data-key="menu">Menu</a></li>
           <li><a href="/contact" data-key="contact">Contact</a></li>
-            <!-- Profile Avatar -->
-                <li id="profile-item">
-                    <div class="profile-avatar">
-                        <div id="avatar" class="avatar" aria-label="User profile">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <div id="dropdown" class="dropdown">
-                            <!-- Will be populated by JavaScript -->
-                        </div>
-                    </div>
-                </li>
+          <li id="profile-item">
+            <div class="profile-avatar">
+              <div id="avatar" class="avatar" aria-label="User profile">
+                <i class="fas fa-user"></i>
+              </div>
+              <div id="dropdown" class="dropdown"></div>
+            </div>
+          </li>
           <li class="lang-switcher">
             <button data-lang="en">EN</button>
             <button data-lang="fi">FI</button>
           </li>
-          <div id="user-section">
-            <!-- JavaScript will populate this based on login status -->
-        </div>
+          <div id="user-section"></div>
         </ul>
-
       </nav>
     </header>
     <main>
@@ -94,10 +92,7 @@
             data-key="today_menu"
             >Today's Menu</a
           >
-          <a
-            href="pages/contact.html"
-            class="btn btn-secondary"
-            data-key="find_us"
+          <a href="/contact" class="btn btn-secondary" data-key="find_us"
             >Find Us</a
           >
         </div>
@@ -149,40 +144,40 @@
     <footer>
       <p data-key="footer">Copyright &copy; 2025. All rights reserved</p>
     </footer>
-<!--  <script>-->
-<!--        // Check login status on index page load-->
-<!--        document.addEventListener('DOMContentLoaded', function() {-->
-<!--            const user = JSON.parse(localStorage.getItem('user') || 'null');-->
-<!--            const token = localStorage.getItem('token');-->
+    <!--  <script>-->
+    <!--        // Check login status on index page load-->
+    <!--        document.addEventListener('DOMContentLoaded', function() {-->
+    <!--            const user = JSON.parse(localStorage.getItem('user') || 'null');-->
+    <!--            const token = localStorage.getItem('token');-->
 
-<!--            if (user && token) {-->
-<!--                // Show personalized welcome-->
-<!--                const welcomeDiv = document.getElementById('welcome-message');-->
-<!--                const userNameSpan = document.getElementById('user-name');-->
+    <!--            if (user && token) {-->
+    <!--                // Show personalized welcome-->
+    <!--                const welcomeDiv = document.getElementById('welcome-message');-->
+    <!--                const userNameSpan = document.getElementById('user-name');-->
 
-<!--                if (welcomeDiv && userNameSpan) {-->
-<!--                    userNameSpan.textContent = user.name || user.email.split('@')[0];-->
-<!--                    welcomeDiv.style.display = 'block';-->
-<!--                }-->
+    <!--                if (welcomeDiv && userNameSpan) {-->
+    <!--                    userNameSpan.textContent = user.name || user.email.split('@')[0];-->
+    <!--                    welcomeDiv.style.display = 'block';-->
+    <!--                }-->
 
-<!--                // Update any existing profile dropdown-->
-<!--                if (typeof updateUIForLoggedInUser === 'function') {-->
-<!--                    updateUIForLoggedInUser(user);-->
-<!--                }-->
+    <!--                // Update any existing profile dropdown-->
+    <!--                if (typeof updateUIForLoggedInUser === 'function') {-->
+    <!--                    updateUIForLoggedInUser(user);-->
+    <!--                }-->
 
-<!--                // Load cart count-->
-<!--                if (typeof loadActiveCartCount === 'function') {-->
-<!--                    loadActiveCartCount();-->
-<!--                }-->
-<!--            }-->
+    <!--                // Load cart count-->
+    <!--                if (typeof loadActiveCartCount === 'function') {-->
+    <!--                    loadActiveCartCount();-->
+    <!--                }-->
+    <!--            }-->
 
-<!--            // Check URL parameters-->
-<!--            const urlParams = new URLSearchParams(window.location.search);-->
-<!--            if (urlParams.get('logged_in') === 'true') {-->
-<!--                // Optional: Show welcome toast/message-->
-<!--                console.log('User logged in successfully');-->
-<!--            }-->
-<!--        });-->
-<!--    </script>-->
+    <!--            // Check URL parameters-->
+    <!--            const urlParams = new URLSearchParams(window.location.search);-->
+    <!--            if (urlParams.get('logged_in') === 'true') {-->
+    <!--                // Optional: Show welcome toast/message-->
+    <!--                console.log('User logged in successfully');-->
+    <!--            }-->
+    <!--        });-->
+    <!--    </script>-->
   </body>
 </html>

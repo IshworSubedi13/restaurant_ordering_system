@@ -1232,4 +1232,18 @@ iframe {
     }
 }
 
+@media screen and (max-width: 400px) {
+	.features, .menu-items {
+		grid-template-columns: unset;
+	}
+}
+
+@media screen and (max-width: 310px) {
+	.item-actions {
+		flex-direction: column;
+		align-items: unset;
+		gap: 15px;
+	}
+}
+
 

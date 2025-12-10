@@ -14,6 +14,7 @@
       type="text/css"
     />
     <script src="../static/js/frontend/hamburger.js" defer></script>
+    <script src="../static/js/frontend/profile_avatar.js" defer></script>
   </head>
   <body>
     <header>
@@ -28,6 +29,14 @@
           <li><a href="/">Home</a></li>
           <li><a href="/product">Menu</a></li>
           <li><a href="/contact">Contact</a></li>
+          <li id="profile-item">
+            <div class="profile-avatar">
+              <div id="avatar" class="avatar" aria-label="User profile">
+                <i class="fas fa-user"></i>
+              </div>
+              <div id="dropdown" class="dropdown"></div>
+            </div>
+          </li>
         </ul>
       </nav>
     </header>
