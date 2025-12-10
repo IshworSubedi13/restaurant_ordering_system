@@ -1,16 +1,11 @@
 const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
 const BACKEND_BASE_URL = "http://127.0.0.1:5000";
 
-function authHeaders(extra = {}) {
-  const accessToken = localStorage.getItem("access_token");
-  console.log("Token from localStorage (menu_detail):", accessToken);
-
-  if (!accessToken) return extra;
-  return {
-    Authorization: `Bearer ${accessToken}`,
-    ...extra,
-  };
-}
+let currentUser = null;
+let userReview = null;
+let currentRating = 0;
+let isEditMode = false;
+let editingReviewId = null;
 
 function getSelectedMenu() {
   const raw = localStorage.getItem("selectedMenu");
@@ -27,49 +22,69 @@ async function fetchAllMenus() {
   return await res.json();
 }
 
-// function for fetching the review and according to the menu item
-async function fetchReviewsForItem(itemId) {
-  const res = await fetch(`${API_BASE_URL}/reviews/`);
+// Get current user
+function getCurrentUser() {
+  try {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return null;
+    const user = JSON.parse(userStr);
+    currentUser = user;
+    return user;
+  } catch (error) {
+    return null;
+  }
+}
 
-  if (!res.ok) {
-    console.error("Failed to fetch reviews", res.status);
+// Fetch reviews
+async function fetchReviewsForItem(itemId) {
+  try {
+    const res = await fetch(`${API_BASE_URL}/reviews/`);
+    if (!res.ok) return [];
+
+    const allReviews = await res.json();
+    const filtered = allReviews.filter((review) => {
+      const nestedId = review.menu && review.menu.id;
+      const flatId = review.menu_id;
+      const directId = review.menu;
+      return (
+        String(nestedId) === String(itemId) ||
+        String(flatId) === String(itemId) ||
+        String(directId) === String(itemId)
+      );
+    });
+
+    const user = getCurrentUser();
+    userReview = null;
+
+    return filtered.map((review) => {
+      const name = review.user?.name || "Anonymous";
+      const initials = name.substring(0, 2).toUpperCase();
+      const numericRating = Number(review.rating) || 0;
+
+      const isOwnReview = user && review.user && String(review.user.id) === String(user.id);
+
+      if (isOwnReview) {
+        userReview = {
+          id: review.id,
+          rating: numericRating,
+          comment: review.comment || ""
+        };
+      }
+
+      return {
+        id: review.id,
+        userId: review.user?.id,
+        userName: name,
+        rating: numericRating,
+        comment: review.comment || "",
+        date: review.created_at,
+        userInitials: initials,
+        isOwnReview: isOwnReview
+      };
+    });
+  } catch (error) {
     return [];
   }
-
-  const allReviews = await res.json();
-
-  const filtered = allReviews.filter((review) => {
-    const nestedId = review.menu && review.menu.id;
-    const flatId = review.menu_id;
-    const directId = review.menu;
-    return (
-      String(nestedId) === String(itemId) ||
-      String(flatId) === String(itemId) ||
-      String(directId) === String(itemId)
-    );
-  });
-
-  return filtered.map((review) => {
-    const name = review.user?.name || "Anonymous";
-    const initials = name
-      .split(" ")
-      .filter(Boolean)
-      .map((p) => p[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
-
-    const numericRating = Number(review.rating) || 0;
-
-    return {
-      id: review.id,
-      userName: name,
-      rating: numericRating,
-      comment: review.comment || "",
-      date: review.created_at,
-      userInitials: initials,
-    };
-  });
 }
 
 function calculateRatingStats(reviews) {
@@ -184,7 +199,7 @@ async function renderItemDetails() {
   `;
 
   addEventListeners(item);
-  renderReviews(item.id);
+  await renderReviews(item.id);
   renderRelatedItems(item?.category?.name, item.id);
 }
 
@@ -220,10 +235,38 @@ async function renderReviews(itemId) {
     </div>
   `;
 
+  // Add Review Button
+  const addReviewBtn = document.querySelector('.add-review-btn');
+  if (addReviewBtn) {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      if (userReview) {
+        addReviewBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Your Review';
+      } else {
+        addReviewBtn.innerHTML = '<i class="fas fa-plus"></i> Add Review';
+      }
+      addReviewBtn.onclick = openReviewModal;
+    } else {
+      addReviewBtn.innerHTML = '<i class="fas fa-plus"></i> Add Review';
+      addReviewBtn.onclick = () => {
+        alert('Please login to write a review');
+        window.location.href = "/login";
+      };
+    }
+  }
+
   const reviewsList = document.getElementById("reviews-list");
   if (reviews.length === 0) {
-    reviewsList.innerHTML =
-      '<p class="no-reviews">No reviews yet. Be the first to review this item!</p>';
+    reviewsList.innerHTML = `
+      <div class="no-reviews">
+        <p>No reviews yet. ${localStorage.getItem("token") ? 'Be the first to review this item!' : 'Log in to write a review.'}</p>
+        ${localStorage.getItem("token") ?
+          '<button class="write-first-review-btn" onclick="openReviewModal()">Write First Review</button>' :
+          '<a href="/login" class="login-to-review">Log in to review</a>'
+        }
+      </div>
+    `;
   } else {
     reviewsList.innerHTML = reviews
       .map(
@@ -233,7 +276,18 @@ async function renderReviews(itemId) {
             <div class="reviewer-info">
               <div class="reviewer-avatar">${review.userInitials}</div>
               <div>
-                <div class="reviewer-name">${review.userName}</div>
+                <div class="reviewer-name">${review.userName}
+                  ${review.isOwnReview ? `
+                    <span class="review-actions-inline">
+                      <button class="icon-btn edit-icon" onclick="editReview('${review.id}')" title="Edit">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="icon-btn delete-icon" onclick="deleteReview('${review.id}')" title="Delete">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </span>
+                  ` : ''}
+                </div>
                 <div class="review-date">${formatDate(review.date)}</div>
               </div>
             </div>
@@ -304,29 +358,68 @@ function addToCart(item, quantity) {
       image: imageUrl,
     });
   }
-
   localStorage.setItem("cart", JSON.stringify(cart));
-  console.log("Cart updated:", cart);
 }
 
-// For review model adding section
-
-let currentRating = 0;
-
 function openReviewModal() {
-  document.getElementById("review-modal").style.display = "flex";
-  currentRating = 0;
-  resetStarRating();
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login to write a review");
+    window.location.href = "/login";
+    return;
+  }
+
+  const modal = document.getElementById("review-modal");
+  const formTitle = modal.querySelector("h3");
+  const submitBtn = modal.querySelector(".submit-review-btn");
+  const textarea = modal.querySelector("textarea");
+
+  if (userReview) {
+    isEditMode = true;
+    editingReviewId = userReview.id;
+    formTitle.textContent = "Edit Your Review";
+    submitBtn.textContent = "Update Review";
+    currentRating = userReview.rating;
+    textarea.value = userReview.comment;
+  } else {
+    isEditMode = false;
+    editingReviewId = null;
+    formTitle.textContent = "Write a Review";
+    submitBtn.textContent = "Submit Review";
+    currentRating = 0;
+    textarea.value = "";
+  }
+
+  // Update star display
+  const stars = document.querySelectorAll(".star");
+  stars.forEach((star, index) => {
+    if (index < currentRating) {
+      star.classList.add("active");
+      star.style.color = "#ffc107";
+    } else {
+      star.classList.remove("active");
+      star.style.color = "#ddd";
+    }
+  });
+
+  modal.style.display = "flex";
 }
 
 function closeReviewModal() {
   document.getElementById("review-modal").style.display = "none";
   document.getElementById("review-form").reset();
+  resetStarRating();
+  isEditMode = false;
+  editingReviewId = null;
 }
 
 function resetStarRating() {
   const stars = document.querySelectorAll(".star");
-  stars.forEach((star) => star.classList.remove("active"));
+  stars.forEach((star) => {
+    star.classList.remove("active");
+    star.style.color = "#ddd";
+  });
+  currentRating = 0;
 }
 
 function setupStarRating() {
@@ -339,28 +432,9 @@ function setupStarRating() {
       stars.forEach((s, index) => {
         if (index < rating) {
           s.classList.add("active");
+          s.style.color = "#ffc107";
         } else {
           s.classList.remove("active");
-        }
-      });
-    });
-
-    star.addEventListener("mouseover", () => {
-      const rating = parseInt(star.dataset.rating);
-      stars.forEach((s, index) => {
-        if (index < rating) {
-          s.style.color = "#ffc107";
-        } else {
-          s.style.color = "#ddd";
-        }
-      });
-    });
-
-    star.addEventListener("mouseout", () => {
-      stars.forEach((s, index) => {
-        if (index < currentRating) {
-          s.style.color = "#ffc107";
-        } else {
           s.style.color = "#ddd";
         }
       });
@@ -368,15 +442,86 @@ function setupStarRating() {
   });
 }
 
-// for posting the review
+function editReview(reviewId) {
+  console.log("Editing review:", reviewId);
+  const reviewsList = document.querySelectorAll('.review-item');
+  reviewsList.forEach(reviewItem => {
+    const editBtn = reviewItem.querySelector('.edit-icon');
+    if (editBtn && editBtn.onclick.toString().includes(reviewId)) {
+      const comment = reviewItem.querySelector('.review-content').textContent;
+      const rating = parseInt(reviewItem.querySelector('.review-rating-number').textContent.match(/\d+/)[0]);
 
-async function createReview(itemId, rating, comment) {
-  const token = localStorage.getItem("access_token");
-  if (!token) {
-    alert("You must log in to submit a review.");
-    throw new Error("No token in localStorage");
+      userReview = {
+        id: reviewId,
+        rating: rating,
+        comment: comment
+      };
+      openReviewModal();
+      return;
+    }
+  });
+}
+
+async function deleteReview(reviewId) {
+  if (!confirm("Are you sure you want to delete your review?")) {
+    return;
   }
 
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login to delete your review");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Failed to delete review");
+    }
+    showNotification("Review deleted successfully");
+    const item = getSelectedMenu();
+    if (item) {
+      await renderReviews(item.id);
+    }
+  } catch (error) {
+    console.error("Delete error:", error);
+    alert("Failed to delete review");
+  }
+}
+
+async function updateReview(reviewId, rating, comment) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("Please login to update your review");
+    return;
+  }
+  const response = await fetch(`${API_BASE_URL}/reviews/${reviewId}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      rating: rating,
+      comment: comment
+    }),
+  });
+
+  const data = await response.json();
+  return data;
+}
+
+async function createReview(itemId, rating, comment) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("You must log in to submit a review.");
+    throw new Error("No token");
+  }
   const res = await fetch(`${API_BASE_URL}/reviews/`, {
     method: "POST",
     headers: {
@@ -385,60 +530,46 @@ async function createReview(itemId, rating, comment) {
     },
     body: JSON.stringify({ menu_id: itemId, rating, comment }),
   });
-
   const text = await res.text();
-  console.log("Review POST status:", res.status);
-  console.log("Review POST body:", text);
-
   let data;
   try {
     data = JSON.parse(text);
   } catch {
     data = { msg: text };
   }
-
-  if (res.status === 401 && data.msg === "Token has expired") {
-    alert("Your session has expired. Please log in again.");
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("currentUser");
-    window.location.href = "/login";
-    throw new Error("Token expired");
-  }
-
   if (!res.ok) {
-    throw new Error(`Failed to create review: ${res.status} ${text}`);
+    throw new Error(`Failed to create review`);
   }
-
   return data;
 }
 
 async function handleReviewSubmission(event) {
   event.preventDefault();
-
   if (currentRating === 0) {
     alert("Please select a rating");
     return;
   }
-
   const comment = event.target.querySelector("textarea").value.trim();
   if (!comment) {
     alert("Please write a review");
     return;
   }
-
   const currentItem = getSelectedMenu();
   if (!currentItem) return;
-
   const itemId = currentItem.id;
-
   try {
-    await createReview(itemId, currentRating, comment);
+    if (isEditMode && editingReviewId) {
+      await updateReview(editingReviewId, currentRating, comment);
+      showNotification("Review updated!");
+    } else {
+      await createReview(itemId, currentRating, comment);
+      showNotification("Thank you for your review!");
+    }
     closeReviewModal();
     await renderReviews(itemId);
-    showNotification("Thank you for your review!");
   } catch (err) {
     console.error(err);
-    alert("Sorry, something went wrong while saving your review.");
+    alert("Something went wrong");
   }
 }
 
@@ -446,77 +577,103 @@ function showNotification(message) {
   const notification = document.createElement("div");
   notification.className = "notification";
   notification.textContent = message;
-
   document.body.appendChild(notification);
-
-  setTimeout(() => {
-    notification.remove();
-  }, 3000);
+  setTimeout(() => notification.remove(), 3000);
 }
 
-// to render the related items
 async function renderRelatedItems(categoryName, currentItemId) {
   const allItems = await fetchAllMenus();
-
   const relatedItems = allItems
-    .filter(
-      (item) =>
-        item?.category?.name === categoryName && item.id !== currentItemId
-    )
+    .filter(item => item?.category?.name === categoryName && item.id !== currentItemId)
     .slice(0, 3);
 
   const container = document.getElementById("related-items");
-
   if (relatedItems.length === 0) {
     container.innerHTML = "<p>No related items found.</p>";
     return;
   }
 
   container.innerHTML = relatedItems
-    .map(
-      (item) => `
-        <div class="related-item" onclick="viewItem('${item.id}')">
-          <div class="related-item-image">
-            <img src="${
-              item.image.startsWith("/static")
-                ? BACKEND_BASE_URL + item.image
-                : item.image
-            }" alt="${item.name}">
-          </div>
-          <div class="related-item-info">
-            <h3 class="related-item-name">${item.name}</h3>
-            <div class="related-item-price">€${item.price.toFixed(2)}</div>
-          </div>
+    .map(item => `
+      <div class="related-item" onclick="viewItem('${item.id}')">
+        <div class="related-item-image">
+          <img src="${item.image.startsWith("/static") ? BACKEND_BASE_URL + item.image : item.image}" alt="${item.name}">
         </div>
-      `
-    )
-    .join("");
+        <div class="related-item-info">
+          <h3 class="related-item-name">${item.name}</h3>
+          <div class="related-item-price">€${item.price.toFixed(2)}</div>
+        </div>
+      </div>
+    `).join("");
 }
 
 function viewItem(itemId) {
   fetchAllMenus().then((allItems) => {
     const item = allItems.find((i) => i.id === itemId);
-    if (!item) return;
-    localStorage.setItem("selectedMenu", JSON.stringify(item));
-    window.location.href = "./menu_detail.html";
+    if (item) {
+      localStorage.setItem("selectedMenu", JSON.stringify(item));
+      window.location.href = "./menu_detail.html";
+    }
   });
 }
 
 function goBack() {
-  window.history.back();
+  window.location.href = "../product";
 }
 
+// Initialize
 document.addEventListener("DOMContentLoaded", () => {
   renderItemDetails();
   setupStarRating();
-  document
-    .getElementById("review-form")
-    .addEventListener("submit", handleReviewSubmission);
+  document.getElementById("review-form").addEventListener("submit", handleReviewSubmission);
 });
 
-document.addEventListener("click", (event) => {
-  const modal = document.getElementById("review-modal");
-  if (event.target === modal) {
-    closeReviewModal();
+// Add CSS for inline icons
+const iconStyle = document.createElement('style');
+iconStyle.textContent = `
+  .review-actions-inline {
+    display: inline-flex;
+    gap: 8px;
+    margin-left: 8px;
   }
-});
+
+  .icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 3px;
+    transition: all 0.2s;
+  }
+
+  .edit-icon {
+    color: #3498db;
+  }
+
+  .edit-icon:hover {
+    background: #3498db;
+    color: white;
+  }
+
+  .delete-icon {
+    color: #e74c3c;
+  }
+
+  .delete-icon:hover {
+    background: #e74c3c;
+    color: white;
+  }
+
+  .icon-btn i {
+    font-size: 14px;
+  }
+`;
+document.head.appendChild(iconStyle);
+
+// Make functions global
+window.editReview = editReview;
+window.deleteReview = deleteReview;
+window.openReviewModal = openReviewModal;
+window.closeReviewModal = closeReviewModal;
+window.goBack = goBack;
+window.viewItem = viewItem;
