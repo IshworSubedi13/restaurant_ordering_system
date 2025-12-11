@@ -1,3 +1,7 @@
+* {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
 .lang-switcher {
     display: flex;
     gap: 0.3rem;
