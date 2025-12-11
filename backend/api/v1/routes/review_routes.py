@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
+from backend.api.v1.models.activity_model import log_activity
 from backend.api.v1.models.review_model import (
     add_review, list_all_reviews,
     find_review_by_id, update_review as update_review_model,
@@ -34,6 +35,7 @@ def create_review():
             return jsonify({"error": "Menu item not found"}), 404
 
     review = add_review(user=user, comment=comment, rating=rating, menu=menu)
+    log_activity("comment", f"User {user.username} created a review {review.id}")
     return jsonify(review_to_dict(review)), 201
 
 
@@ -65,6 +67,7 @@ def update_review(review_id):
 
     data = request.get_json() or {}
     updated_review = update_review_model(review_id, data)
+    log_activity("comment", f"User {review.user.username} updated review {review.id}")
     return jsonify(review_to_dict(updated_review)), 200
 
 
@@ -83,4 +86,5 @@ def delete_review(review_id):
         return jsonify({"error": "Unauthorized"}), 403
 
     delete_review_model(review_id)
+    log_activity("review", f"User {user_id if role != 'admin' else 'admin'} deleted review {review.id}")
     return jsonify({"message": "Review deleted successfully"}), 200
