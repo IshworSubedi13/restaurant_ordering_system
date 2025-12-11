@@ -132,6 +132,26 @@ function loadOrderModalScript() {
     document.head.appendChild(script);
 }
 
+function getShortDescriptionLine(description, maxChars = 20) {
+    if (!description || description.trim() === '') {
+        return '<span class="no-description">No description</span>';
+    }
+
+    const cleanDesc = description.replace(/\s+/g, ' ').trim();
+
+    if (cleanDesc.length <= maxChars) {
+        return cleanDesc;
+    }
+
+    let shortDesc = cleanDesc.substring(0, maxChars);
+    const lastSpace = shortDesc.lastIndexOf(' ');
+
+    if (lastSpace > maxChars * 0.7) {
+        shortDesc = cleanDesc.substring(0, lastSpace);
+    }
+
+    return shortDesc + '...';
+}
 
 // Loads menus into the menu table using API call and checks for admin access
 async function loadMenuPage() {
@@ -143,13 +163,13 @@ async function loadMenuPage() {
     const addBtn = document.getElementById("addMenuBtn");
 
     if (!token) {
-        body.innerHTML = "<tr><td colspan='7'>Unauthorized (no token)</td></tr>";
+        body.innerHTML = "<tr><td colspan='9'>Unauthorized (no token)</td></tr>";
         loadMenuModalScript();
         return;
     }
 
     if (!user || user.role.toLowerCase() !== "admin") {
-        body.innerHTML = "<tr><td colspan='7'>Unauthorized (admin only)</td></tr>";
+        body.innerHTML = "<tr><td colspan='9'>Unauthorized (admin only)</td></tr>";
         if (addBtn) addBtn.style.display = "none";
         loadMenuModalScript();
         return;
@@ -157,7 +177,7 @@ async function loadMenuPage() {
 
     if (addBtn) addBtn.style.display = "inline-flex";
 
-    body.innerHTML = "<tr><td colspan='7'>Loading...</td></tr>";
+    body.innerHTML = "<tr><td colspan='9'>Loading...</td></tr>";
 
     try {
         const response = await fetch("/api/v1/menus/", {
@@ -168,35 +188,41 @@ async function loadMenuPage() {
         const data = await response.json();
 
         if (!response.ok) {
-            body.innerHTML = `<tr><td colspan='7'>Error: ${data.error || "Failed to load menus"}</td></tr>`;
+            body.innerHTML = `<tr><td colspan='9'>Error: ${data.error || "Failed to load menus"}</td></tr>`;
             loadMenuModalScript();
             return;
         }
 
         if (!Array.isArray(data) || data.length === 0) {
-            body.innerHTML = "<tr><td colspan='7'>No menu items found</td></tr>";
+            body.innerHTML = "<tr><td colspan='9'>No menu items found</td></tr>";
         } else {
-            body.innerHTML = data.map(menu => `
+            body.innerHTML = data.map(menu => {
+                // Get short description
+                const shortDesc = getShortDescriptionLine(menu.description || "");
+
+                return `
                 <tr>
                     <td>${menu.id}</td>
                     <td>${menu.name}</td>
+                    <td title="${menu.description || ''}">${shortDesc}</td>
                     <td>${menu.category.name}</td>
                     <td>${menu.price}</td>
                     <td>${menu.available ? "Yes" : "No"}</td>
-                    <td>${menu.is_special || ""}</td>
+                    <td>${menu.is_special ? "Yes" : "No"}</td>
                     <td>${menu.image ? `<img src="${menu.image}" alt="${menu.name}" style="height:50px;">` : ""}</td>
                     <td class="actions">
-                        <button class="edit" onclick="startEditMenu('${menu.id}','${menu.name}',${menu.price},'${menu.category.id}',${menu.available})">Edit</button>
+                        <button class="edit" onclick="startEditMenu('${menu.id}','${menu.name}','${menu.description ||""}',${menu.price},'${menu.category.id}',${menu.available})">Edit</button>
                         <button class="delete" onclick="deleteMenu('${menu.id}')">Delete</button>
                     </td>
                 </tr>
-            `).join("");
+                `;
+            }).join("");
         }
         loadMenuModalScript();
 
     } catch (error) {
         console.error("Error fetching menus:", error);
-        body.innerHTML = "<tr><td colspan='7'>Network Error. Please try again.</td></tr>";
+        body.innerHTML = "<tr><td colspan='9'>Network Error. Please try again.</td></tr>";
         loadMenuModalScript();
     }
 }

@@ -5,6 +5,7 @@ from backend.api.v1.models.category_model import Category
 
 class Menu(Document):
     name = StringField(required=True)
+    description = StringField()  # ADD THIS LINE
     price = FloatField(required=True)
     category = ReferenceField(Category, required=True)
     image = StringField()
@@ -22,6 +23,7 @@ def menu_to_dict(menu):
     return {
         "id": str(menu.id),
         "name": menu.name,
+        "description": menu.description,  # ADD THIS LINE
         "price": menu.price,
         "image": menu.image,
         "available": menu.available,
@@ -33,11 +35,14 @@ def menu_to_dict(menu):
         }
     }
 
+
 def list_all_menu():
     return Menu.objects()
 
+
 def find_menu_by_id(menu_id):
     return Menu.objects.get(id=menu_id)
+
 
 def add_menu(data):
     category_id = data.get("category_id")
@@ -47,6 +52,7 @@ def add_menu(data):
 
     menu = Menu(
         name=data["name"],
+        description=data.get("description", ""),  # ADD THIS LINE
         price=float(data["price"]),
         category=category,
         image=data.get("image"),
@@ -56,11 +62,15 @@ def add_menu(data):
     menu.save()
     return menu
 
+
 def update_menu(menu_id, data):
     menu = find_menu_by_id(menu_id)
 
     if "name" in data:
         menu.name = data["name"]
+
+    if "description" in data:  # ADD THIS SECTION
+        menu.description = data["description"]
 
     if "price" in data:
         menu.price = float(data["price"])
@@ -88,6 +98,7 @@ def delete_menu(menu_id):
     menu = find_menu_by_id(menu_id)
     menu.delete()
     return True
+
 
 def get_todays_specials_menu():
     return Menu.objects(is_special=True, available=True)

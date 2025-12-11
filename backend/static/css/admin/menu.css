@@ -155,3 +155,21 @@
     color: #fff;
     transform: translateY(-1px);
 }
+.form-control {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+textarea.form-control {
+    min-height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+.no-description {
+    color: #888;
+    font-style: italic;
+    font-size: 12px;
+}

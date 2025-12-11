@@ -280,6 +280,22 @@ function showOrderConfirmation(orderData, cartItems) {
     }
 }
 
+function getShortDescriptionLine(description, maxChars = 60) {
+    if (!description || description.trim() === '') {
+        return '<span class="no-description">No description</span>';
+    }
+    const cleanDesc = description.replace(/\s+/g, ' ').trim();
+    if (cleanDesc.length <= maxChars) {
+        return cleanDesc;
+    }
+    let shortDesc = cleanDesc.substring(0, maxChars);
+    const lastSpace = shortDesc.lastIndexOf(' ');
+    if (lastSpace > maxChars * 0.7) {
+        shortDesc = cleanDesc.substring(0, lastSpace);
+    }
+    return shortDesc + '...';
+}
+
 function renderMenuItems(category) {
   menuItemsContainer.innerHTML = "";
   let filteredItems;
@@ -313,6 +329,9 @@ function renderMenuItems(category) {
     const imageUrl = item?.image?.startsWith("/static")
       ? `${BACKEND_BASE_URL}${item?.image}`
       : item?.image;
+
+    const shortDesc = getShortDescriptionLine(item?.description || "", 60);
+
     menuItemElement.innerHTML = `
       <div class="item-image" style="background-image: url('${imageUrl}')">
         ${item.is_special ? '<div class="special-badge">Today\'s Special</div>' : ''}
@@ -322,7 +341,7 @@ function renderMenuItems(category) {
           <h3 class="item-name">${item?.name}</h3>
           <span class="item-price">€${item?.price.toFixed(2)}</span>
         </div>
-        <p class="item-description">${item?.description || ""}</p>
+        <p class="item-description" title="${item?.description || ''}">${shortDesc}</p>
         <div class="item-actions">
           <div class="quantity-controls">
             <button class="quantity-btn minus">-</button>

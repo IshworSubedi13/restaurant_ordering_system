@@ -7,6 +7,7 @@ function initializeMenuModal() {
     const menuForm = document.getElementById("menuForm");
 
     const menuName = document.getElementById("menuName");
+    const menuDescription = document.getElementById("menuDescription"); // Add this
     const menuPrice = document.getElementById("menuPrice");
     const menuCategory = document.getElementById("menuCategory");
     const menuAvailable = document.getElementById("menuAvailable");
@@ -15,7 +16,7 @@ function initializeMenuModal() {
 
     let editingId = null;
 
-    // eplace save button to remove old event listeners
+    // Replace save button to remove old event listeners
     const oldSaveBtn = document.getElementById("saveMenuBtn");
     const saveBtn = oldSaveBtn.cloneNode(true);
     oldSaveBtn.parentNode.replaceChild(saveBtn, oldSaveBtn);
@@ -51,6 +52,7 @@ function initializeMenuModal() {
     // Save / Update
     saveBtn.addEventListener("click", () => {
         const name = menuName.value.trim();
+        const description = menuDescription.value.trim(); // Add this
         const price = menuPrice.value.trim();
         const category_id = menuCategory.value;
         const imageFile = menuImage.files[0];
@@ -62,6 +64,7 @@ function initializeMenuModal() {
 
         const formData = new FormData();
         formData.append("name", name);
+        formData.append("description", description); // Add this
         formData.append("price", price);
         formData.append("category_id", category_id);
         formData.append("available", menuAvailable.checked ? "true" : "false");
@@ -73,12 +76,13 @@ function initializeMenuModal() {
         else saveMenu(formData, closeModal);
     });
 
-    // Edit menu
-    window.startEditMenu = async function (id, name, price, category_id, available,is_special) {
+    // Edit menu - FIXED: Added description parameter
+    window.startEditMenu = async function (id, name, description, price, category_id, available, is_special) {
         editingId = id;
         saveBtn.textContent = "Update Menu";
 
         menuName.value = name;
+        menuDescription.value = description || ""; // Add this
         menuPrice.value = price;
         menuAvailable.checked = available == true || available == "true";
         menuSpecial.checked = is_special == true || is_special == "true";
