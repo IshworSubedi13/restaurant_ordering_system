@@ -1,5 +1,5 @@
-const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
-const BACKEND_BASE_URL = "http://127.0.0.1:5000";
+const API_BASE_URL = "/api/v1";
+//const BACKEND_BASE_URL = "http://127.0.0.1:5000";
 
 function debugLocalStorage() {
   console.log("=== LocalStorage Debug ===");
@@ -327,8 +327,9 @@ function renderMenuItems(category) {
       openMenuDetail(item);
     });
     const imageUrl = item?.image?.startsWith("/static")
-      ? `${BACKEND_BASE_URL}${item?.image}`
+      ? item?.image
       : item?.image;
+
 
     const shortDesc = getShortDescriptionLine(item?.description || "", 60);
 

@@ -1,5 +1,5 @@
-const API_BASE_URL = "http://127.0.0.1:5000/api/v1";
-const BACKEND_BASE_URL = "http://127.0.0.1:5000";
+const API_BASE_URL = "api/v1";
+//const BACKEND_BASE_URL = "http://127.0.0.1:5000";
 
 let currentUser = null;
 let userReview = null;
@@ -109,9 +109,10 @@ async function renderItemDetails() {
     return;
   }
 
-  const imageUrl = item.image?.startsWith("/static")
-    ? `${BACKEND_BASE_URL}${item.image}`
-    : item.image;
+  const imageUrl = item?.image?.startsWith("/static")
+      ? item?.image
+      : item?.image;
+
 
   container.innerHTML = `
     <div class="item-image">

@@ -1,5 +1,3 @@
-// register.js
-
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.querySelector(".register-form");
 
