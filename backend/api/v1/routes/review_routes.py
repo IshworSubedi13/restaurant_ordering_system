@@ -88,3 +88,36 @@ def delete_review(review_id):
     delete_review_model(review_id)
     log_activity("review", f"User {user_id if role != 'admin' else 'admin'} deleted review {review.id}")
     return jsonify({"message": "Review deleted successfully"}), 200
+
+
+@review_bp.get("/review_stats")
+@jwt_required()
+def get_review_stats():
+    claims = get_jwt()
+    role = claims.get("role", "user")
+    if role != "admin":
+        return jsonify({"error": "Admin access required"}), 403
+    reviews = list_all_reviews()
+
+    if not reviews:
+        return jsonify({
+            "total_users": 0,
+            "average_rating": 0,
+            "total_reviews": 0
+        }), 200
+    user_ids = set()
+    total_rating = 0
+    for review in reviews:
+        if hasattr(review, 'user') and review.user:
+            user_ids.add(str(review.user.id))
+        total_rating += review.rating
+
+    total_users = len(user_ids)
+    total_reviews = len(reviews)
+    average_rating = round(total_rating / total_reviews, 1)
+
+    return jsonify({
+        "total_users": total_users,
+        "average_rating": average_rating,
+        "total_reviews": total_reviews
+    }), 200

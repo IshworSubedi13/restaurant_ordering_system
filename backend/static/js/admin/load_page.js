@@ -28,6 +28,7 @@ const sectionLoaders = {
     if (typeof loadActivity === "function") loadActivity();
     if (typeof loadTotalRevenue === "function") loadTotalRevenue();
     if (typeof loadTotalOrders === "function") loadTotalOrders();
+    if( typeof loadReviewStats === "function") loadReviewStats();
     },
     user: () => { if (typeof loadUsersPage === "function") loadUsersPage(); },
     order: () => { if (typeof loadOrdersPage === "function") loadOrdersPage(); },

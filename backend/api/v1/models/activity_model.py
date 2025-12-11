@@ -17,7 +17,7 @@ def log_activity(icon, description):
     return activity
 
 
-def get_recent_activities(limit=20):
+def get_recent_activities(limit=10):
     return Activity.objects.order_by("-created_at").limit(limit)
 
 

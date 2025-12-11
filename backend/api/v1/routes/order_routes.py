@@ -33,7 +33,7 @@ def create_order_route():
         return jsonify({"error": "User not found"}), 404
     try:
         order = add_order(user, items)
-        log_activity("lunch_dining", f"Order created: {order.name}")
+        log_activity("lunch_dining", f"Order created: {order.id}")
         return jsonify(order_to_dict(order)), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
