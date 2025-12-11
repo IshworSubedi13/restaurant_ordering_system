@@ -6,7 +6,7 @@ from werkzeug.utils import secure_filename
 
 from backend.api.v1.models.menu_model import (
     list_all_menu, add_menu,
-    update_menu, delete_menu, menu_to_dict
+    update_menu, delete_menu, menu_to_dict, get_todays_specials_menu
 )
 
 menu_bp = Blueprint("menu_bp", __name__, url_prefix="/menus")
@@ -68,6 +68,7 @@ def create_menu_route():
     if image_url:
         data["image"] = image_url
     data["available"] = data.get("available") == "true"
+    data["is_special"] = data.get("is_special") == "true"
 
     try:
         menu = add_menu(data)
@@ -92,6 +93,8 @@ def update_menu_route(menu_id):
 
     if "available" in data:
         data["available"] = data["available"] == "true"
+    if "is_special" in data:
+        data["is_special"] = data["is_special"] == "true"
 
     try:
         menu = update_menu(menu_id, data)
@@ -111,3 +114,28 @@ def delete_menu_route(menu_id):
         return jsonify({"message": "Menu deleted"}), 200
     except:
         return jsonify({"error": "Menu not found"}), 404
+
+
+@menu_bp.get("/specials")
+def get_todays_specials():
+    try:
+        specials = get_todays_specials_menu()
+
+        if not specials:
+            from backend.api.v1.models.menu_model import Menu
+            specials = Menu.objects(available=True).limit(7)
+
+        return jsonify({
+            "success": True,
+            "title": "Today's Specials",
+            "message": "Check out our exclusive deals for today!",
+            "count": len(specials),
+            "specials": [menu_to_dict(s) for s in specials]
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "specials": []
+        }), 500

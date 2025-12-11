@@ -182,6 +182,7 @@ async function loadMenuPage() {
                     <td>${menu.category.name}</td>
                     <td>${menu.price}</td>
                     <td>${menu.available ? "Yes" : "No"}</td>
+                    <td>${menu.is_special || ""}</td>
                     <td>${menu.image ? `<img src="${menu.image}" alt="${menu.name}" style="height:50px;">` : ""}</td>
                     <td class="actions">
                         <button class="edit" onclick="startEditMenu('${menu.id}','${menu.name}',${menu.price},'${menu.category.id}',${menu.available})">Edit</button>
