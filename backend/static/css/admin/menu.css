@@ -46,6 +46,9 @@
     display: flex;
     flex-direction: column;
     font-family: Arial, sans-serif;
+    max-height: 90vh;
+    overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .modal-header {
