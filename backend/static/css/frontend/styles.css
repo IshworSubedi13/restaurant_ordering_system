@@ -278,6 +278,7 @@ footer a:hover {
 }
 
 .page-title p {
+	padding: 0 1rem;
 	color: #7f8c8d;
 	font-size: 1.1rem;
 }
@@ -708,6 +709,7 @@ iframe {
 /* Responsive adjustments for contact page */
 @media (max-width: 768px) {
 	.contact-container {
+		display: unset;
 		grid-template-columns: 1fr;
 		gap: 2rem;
 	}

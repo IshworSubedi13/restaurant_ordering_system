@@ -263,6 +263,14 @@ body {
     margin-bottom: 2rem;
 }
 
+@media screen and (max-width: 320px) {
+    .reviews-header {
+        flex-direction: column;
+        align-items: unset;
+        gap: 10px;
+    }
+}
+
 .reviews-title {
     color: #2c3e50;
     font-size: 1.5rem;
@@ -562,5 +570,20 @@ body {
     }
     .reviews-list {
         grid-template-columns: 1fr;
+    }
+}
+
+@media screen and (max-width: 300px) {
+    .reviews-list {
+        display: unset;
+    }
+    .review-header {
+        flex-direction: column;
+    }
+}
+
+@media screen and (max-width:235px) {
+    .reviewer-info {
+        flex-direction: column;
     }
 }
