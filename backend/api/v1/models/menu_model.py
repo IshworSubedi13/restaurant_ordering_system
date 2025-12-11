@@ -9,6 +9,7 @@ class Menu(Document):
     category = ReferenceField(Category, required=True)
     image = StringField()
     available = BooleanField(default=True)
+    is_special = BooleanField(default=False)
     created_at = DateTimeField(default=lambda: datetime.datetime.now(datetime.timezone.utc))
 
 
@@ -24,6 +25,7 @@ def menu_to_dict(menu):
         "price": menu.price,
         "image": menu.image,
         "available": menu.available,
+        "is_special": menu.is_special,
         "category": {
             "id": str(category.id) if category else None,
             "name": category.name if category else "Unknown",
@@ -48,7 +50,8 @@ def add_menu(data):
         price=float(data["price"]),
         category=category,
         image=data.get("image"),
-        available=data.get("available", True)
+        available=data.get("available", True),
+        is_special=data.get("is_special", False)
     )
     menu.save()
     return menu
@@ -68,6 +71,9 @@ def update_menu(menu_id, data):
     if "image" in data:
         menu.image = data["image"]
 
+    if "is_special" in data:
+        menu.is_special = data["is_special"]
+
     if "category_id" in data:
         category = Category.objects(id=data["category_id"]).first()
         if not category:
@@ -82,3 +88,6 @@ def delete_menu(menu_id):
     menu = find_menu_by_id(menu_id)
     menu.delete()
     return True
+
+def get_todays_specials_menu():
+    return Menu.objects(is_special=True, available=True)

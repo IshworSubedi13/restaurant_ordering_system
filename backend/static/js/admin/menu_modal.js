@@ -11,6 +11,7 @@ function initializeMenuModal() {
     const menuCategory = document.getElementById("menuCategory");
     const menuAvailable = document.getElementById("menuAvailable");
     const menuImage = document.getElementById("menuImage");
+    const menuSpecial = document.getElementById("menuSpecial");
 
     let editingId = null;
 
@@ -64,6 +65,7 @@ function initializeMenuModal() {
         formData.append("price", price);
         formData.append("category_id", category_id);
         formData.append("available", menuAvailable.checked ? "true" : "false");
+        formData.append("is_special", menuSpecial.checked);
 
         if (imageFile) formData.append("image", imageFile);
 
@@ -72,13 +74,14 @@ function initializeMenuModal() {
     });
 
     // Edit menu
-    window.startEditMenu = async function (id, name, price, category_id, available) {
+    window.startEditMenu = async function (id, name, price, category_id, available,is_special) {
         editingId = id;
         saveBtn.textContent = "Update Menu";
 
         menuName.value = name;
         menuPrice.value = price;
         menuAvailable.checked = available == true || available == "true";
+        menuSpecial.checked = is_special == true || is_special == "true";
 
         await populateMenuCategories(category_id);
 
