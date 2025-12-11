@@ -1,5 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
+
+from backend.api.v1.models.activity_model import log_activity
 from backend.api.v1.models.order_model import (
     add_order,
     list_all_orders,
@@ -31,6 +33,7 @@ def create_order_route():
         return jsonify({"error": "User not found"}), 404
     try:
         order = add_order(user, items)
+        log_activity("lunch_dining", f"Order created: {order.name}")
         return jsonify(order_to_dict(order)), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 400
@@ -74,6 +77,7 @@ def update_order_route(order_id):
     order = update_order(order_id, data)
     if not order:
         return jsonify({"error": "Order not found"}), 404
+    log_activity("lunch_dining", f"Order updated: {order.id}")
     return jsonify(order_to_dict(order)), 200
 
 
@@ -87,6 +91,7 @@ def delete_order_route(order_id):
     success = delete_order(order_id)
     if not success:
         return jsonify({"error": "Order not found"}), 404
+    log_activity("lunch_dining", f"Order deleted: {order_id}")
     return jsonify({"message": "Order deleted"}), 200
 
 
@@ -131,5 +136,5 @@ def user_cancel_order(order_id):
         return jsonify({"error": f"Cannot cancel order with status: {order.status}"}), 400
     order.update(status="cancelled")
     order.save()
-
+    log_activity("cancel", f"User {user_id} cancelled order {order_id}")
     return jsonify(order_to_dict(order)), 200

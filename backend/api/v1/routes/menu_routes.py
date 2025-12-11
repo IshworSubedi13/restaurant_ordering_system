@@ -4,6 +4,7 @@ from flask import Blueprint, request, jsonify, current_app
 from flask_jwt_extended import jwt_required, get_jwt
 from werkzeug.utils import secure_filename
 
+from backend.api.v1.models.activity_model import log_activity
 from backend.api.v1.models.menu_model import (
     list_all_menu, add_menu,
     update_menu, delete_menu, menu_to_dict, get_todays_specials_menu
@@ -72,6 +73,7 @@ def create_menu_route():
 
     try:
         menu = add_menu(data)
+        log_activity("menu_book", f"Menu added: {menu.name}")
         return jsonify(menu_to_dict(menu)), 201
 
     except Exception as e:
@@ -98,6 +100,7 @@ def update_menu_route(menu_id):
 
     try:
         menu = update_menu(menu_id, data)
+        log_activity("menu_book", f"Menu updated: {menu.name}")
         return jsonify(menu_to_dict(menu)), 200
 
     except Exception as e:
@@ -111,6 +114,7 @@ def delete_menu_route(menu_id):
         return jsonify({"error": "Admin access required"}), 403
     try:
         delete_menu(menu_id)
+        log_activity("menu_book", f"Menu deleted: {menu_id}")
         return jsonify({"message": "Menu deleted"}), 200
     except:
         return jsonify({"error": "Menu not found"}), 404
