@@ -26,8 +26,8 @@ At the same time, the system allows restaurant staff and administrators to:
 * Publish announcements or updates.
 * Analyze user feedback and generate statistics.
 This system combines modern web technologies to create a responsive, secure, and user-friendly application for both front-end users (customers) and back-end users (restaurant staff/admins).
-### Audience
 ---
+### Audience
 #### Primary Audience:
 * Customers who want to browse menus, place orders for pick-up, and view daily specials.
 #### Secondary Audience:
@@ -164,8 +164,6 @@ Werkzeug==3.1.3
 Flask-Cors==6.0.1
 gunicorn==23.0.0
 ```
-
-### API Endpoints
 
 ## API Endpoints
 
