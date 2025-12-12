@@ -214,6 +214,9 @@ gunicorn==23.0.0
 ---
 ### Visit Website
 [Click here to view the live site](https://restaurant-ordering-system-8i7d.onrender.com)
+Testing For admin:
+username: admin@gmail.com
+password: admin123
 
 ## Project Contributors
 
