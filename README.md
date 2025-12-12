@@ -168,52 +168,52 @@ gunicorn==23.0.0
 ## API Endpoints
 
 ### Authentication
-- `POST /register` - Register a new user
-- `POST /login` - Login and receive JWT access token
+- `POST api/v1/auth/register` - Register a new user
+- `POST api/v1/auth/login` - Login and receive JWT access token
 
 ### Categories
-- `GET /categories/` - List all categories (admin only)
-- `GET /categories/all` - List all categories (public)
-- `GET /categories/<category_id>` - Get category by ID (admin only)
-- `POST /categories/` - Create new category (admin only)
-- `PUT /categories/<category_id>` - Update category (admin only)
-- `DELETE /categories/<category_id>` - Delete category (admin only)
-- `GET /categories/name/<name>` - Get category by name (admin only)
+- `GET api/v1/categories/` - List all categories (admin only)
+- `GET api/v1/categories/all` - List all categories (public)
+- `GET api/v1/categories/<category_id>` - Get category by ID (admin only)
+- `POST api/v1/categories/` - Create new category (admin only)
+- `PUT api/v1/categories/<category_id>` - Update category (admin only)
+- `DELETE api/v1/categories/<category_id>` - Delete category (admin only)
+- `GET api/v1/categories/name/<name>` - Get category by name (admin only)
 
 ### Menu
-- `GET /menus/` - List all menus (admin only)
-- `GET /menus/all` - List all menus (public)
-- `POST /menus/` - Create new menu item (admin only)
-- `PUT /menus/<menu_id>` - Update menu item (admin only)
-- `DELETE /menus/<menu_id>` - Delete menu item (admin only)
-- `GET /menus/specials` - Get today's specials
+- `GET api/v1/menus/` - List all menus (admin only)
+- `GET api/v1/menus/all` - List all menus (public)
+- `POST api/v1/menus/` - Create new menu item (admin only)
+- `PUT api/v1/menus/<menu_id>` - Update menu item (admin only)
+- `DELETE api/v1/menus/<menu_id>` - Delete menu item (admin only)
+- `GET api/v1/menus/specials` - Get today's specials
 
 ### Orders
-- `POST /orders/` - Create a new order
-- `GET /orders/` - Get all orders (admin sees all, user sees own)
-- `GET /orders/<order_id>` - Get order by ID
-- `PUT /orders/<order_id>` - Update order (admin only)
-- `DELETE /orders/<order_id>` - Delete order (admin only)
-- `POST /orders/<order_id>/cancel` - Cancel order (user)
-- `GET /orders/total_orders` - Total orders (admin only)
-- `GET /orders/total_revenue` - Total revenue (admin only)
+- `POST api/v1/orders/` - Create a new order
+- `GET api/v1/orders/` - Get all orders (admin sees all, user sees own)
+- `GET api/v1/orders/<order_id>` - Get order by ID
+- `PUT api/v1/orders/<order_id>` - Update order (admin only)
+- `DELETE api/v1/orders/<order_id>` - Delete order (admin only)
+- `POST api/v1/orders/<order_id>/cancel` - Cancel order (user)
+- `GET api/v1/orders/total_orders` - Total orders (admin only)
+- `GET api/v1/orders/total_revenue` - Total revenue (admin only)
 
 ### Reviews
-- `POST /reviews/` - Create a review
-- `GET /reviews/` - List all reviews
-- `GET /reviews/<review_id>` - Get review by ID
-- `PUT /reviews/<review_id>` - Update review (owner only)
-- `DELETE /reviews/<review_id>` - Delete review (owner or admin)
-- `GET /reviews/review_stats` - Review statistics (admin only)
+- `POST api/v1/reviews/` - Create a review
+- `GET api/v1/reviews/` - List all reviews
+- `GET api/v1/reviews/<review_id>` - Get review by ID
+- `PUT api/v1/reviews/<review_id>` - Update review (owner only)
+- `DELETE api/v1/reviews/<review_id>` - Delete review (owner or admin)
+- `GET api/v1/reviews/review_stats` - Review statistics (admin only)
 
 ### Users
-- `GET /users/` - List all users (admin only)
-- `GET /users/<user_id>` - Get user by ID (admin only)
-- `GET /users/count` - Total customers (admin only)
+- `GET api/v1/users/` - List all users (admin only)
+- `GET api/v1/users/<user_id>` - Get user by ID (admin only)
+- `GET api/v1/users/count` - Total customers (admin only)
 
 ---
 ### Visit Website
-[Click here to view the live site](https://restaurant-ordering-system-m4mx.onrender.com)
+[Click here to view the live site](https://restaurant-ordering-system-8i7d.onrender.com)
 
 ## Project Contributors
 
