@@ -35,7 +35,7 @@ def create_review():
             return jsonify({"error": "Menu item not found"}), 404
 
     review = add_review(user=user, comment=comment, rating=rating, menu=menu)
-    log_activity("comment", f"User {user.username} created a review {review.id}")
+    # log_activity("comment", f"User {user.username} created a review {review.id}")
     return jsonify(review_to_dict(review)), 201
 
 
@@ -67,7 +67,7 @@ def update_review(review_id):
 
     data = request.get_json() or {}
     updated_review = update_review_model(review_id, data)
-    log_activity("comment", f"User {review.user.username} updated review {review.id}")
+    # log_activity("comment", f"User {review.user.username} updated review {review.id}")
     return jsonify(review_to_dict(updated_review)), 200
 
 
@@ -86,7 +86,7 @@ def delete_review(review_id):
         return jsonify({"error": "Unauthorized"}), 403
 
     delete_review_model(review_id)
-    log_activity("review", f"User {user_id if role != 'admin' else 'admin'} deleted review {review.id}")
+    # log_activity("review", f"User {user_id if role != 'admin' else 'admin'} deleted review {review.id}")
     return jsonify({"message": "Review deleted successfully"}), 200
 
 

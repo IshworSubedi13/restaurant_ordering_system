@@ -1,4 +1,4 @@
-const API_BASE_URL = "api/v1";
+const API_BASE_URL = `${window.location.origin}/api/v1`;
 //const BACKEND_BASE_URL = "http://127.0.0.1:5000";
 
 let currentUser = null;
@@ -110,9 +110,8 @@ async function renderItemDetails() {
   }
 
   const imageUrl = item?.image?.startsWith("/static")
-      ? item?.image
-      : item?.image;
-
+    ? item?.image
+    : item?.image;
 
   container.innerHTML = `
     <div class="item-image">
@@ -365,24 +364,39 @@ async function createReview(itemId, rating, comment) {
     throw new Error("No token");
   }
 
+  const payload = { menu_id: itemId, rating, comment };
+  console.log("POST review:", payload);
+
   const res = await fetch(`${API_BASE_URL}/reviews/`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ menu_id: itemId, rating, comment }),
+    body: JSON.stringify(payload),
   });
 
-  const text = await res.text();
-  try {
-    return JSON.parse(text);
-  } catch {
-    return { msg: text };
+  if (res.status === 401) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    alert("Session expired. Please login again.");
+    window.location.href = "/login";
+    throw new Error("Token expired");
   }
+
+  const text = await res.text();
+  console.log("POST /reviews status:", res.status);
+  console.log("POST /reviews response:", text);
+
+  if (!res.ok) {
+    throw new Error(text || `Request failed (${res.status})`);
+  }
+
+  return JSON.parse(text);
 }
 
 async function handleReviewSubmission(event) {
+  console.log("handleReviewSubmission fired");
   event.preventDefault();
 
   if (currentRating === 0) {
@@ -404,14 +418,20 @@ async function handleReviewSubmission(event) {
       await updateReview(editingReviewId, currentRating, comment);
       showNotification("Review updated!");
     } else {
+      console.log("createReview called", {
+        itemId: currentItem.id,
+        rating: currentRating,
+        comment,
+      });
       await createReview(currentItem.id, currentRating, comment);
       showNotification("Thank you for your review!");
     }
 
     closeReviewModal();
     await renderReviews(currentItem.id);
-  } catch {
-    alert("Something went wrong");
+  } catch (err) {
+    console.error(err);
+    alert(err.message || "Something went wrong");
   }
 }
 
@@ -435,7 +455,7 @@ document.addEventListener("DOMContentLoaded", () => {
     .addEventListener("submit", handleReviewSubmission);
 });
 
-// Extra CSS for inline buttons
+// inline css
 const iconStyle = document.createElement("style");
 iconStyle.textContent = `
   .review-actions-inline {
@@ -458,7 +478,6 @@ iconStyle.textContent = `
 `;
 document.head.appendChild(iconStyle);
 
-// Expose needed functions to HTML
 window.editReview = editReview;
 window.deleteReview = deleteReview;
 window.openReviewModal = openReviewModal;
